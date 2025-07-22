@@ -1,18 +1,20 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 
 export function AuthButton() {
   const router = useRouter();
   const supabase = createClient();
 
   const handleSignIn = async () => {
+    const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
+    
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${baseUrl}/auth/callback`,
         queryParams: {
           prompt: 'consent' 
         }    
