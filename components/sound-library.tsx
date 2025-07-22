@@ -9,20 +9,33 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { useRemoveSound } from "@/lib/hooks/use-remove-sound";
 import { useSoundUpload } from "@/lib/hooks/use-sound-upload";
 import { useSoundStore } from "@/lib/store";
+import type { StreamDeckKey } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
-import { Play, Search, Square, Trash2, Upload } from "lucide-react";
+import { Key, Play, Search, Square, Trash2, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 
 export function SoundLibrary() {
   const [search, setSearch] = useState("");
-  const { sounds, setSounds, playSound, stopSound, removeSound } = useSoundStore();
+  const { 
+    sounds, 
+    setSounds, 
+    playSound, 
+    stopSound, 
+    currentlyPlayingId,
+    streamDeckKeys,
+    setSelectedKey
+  } = useSoundStore();
 
   const { uploadSound, isUploading } = useSoundUpload();
-  const [playingId, setPlayingId] = useState<string | null>(null);
+  const { removeSound, isRemoving } = useRemoveSound();
+  
+  // Estado para el sonido seleccionado actualmente
+  const [selectedSoundId, setSelectedSoundId] = useState<string | null>(null);
   
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
@@ -59,47 +72,104 @@ export function SoundLibrary() {
   );
 
   const handlePlay = (soundId: string) => {
-    if (playingId === soundId) {
+    if (currentlyPlayingId === soundId) {
       stopSound(soundId);
-      setPlayingId(null);
     } else {
-      if (playingId) {
-        stopSound(playingId);
-      }
       playSound(soundId);
-      setPlayingId(soundId);
     }
   };
 
-  useEffect(() => {
-    // Add onend event listener to the currently playing sound
-    if (playingId) {
-      const { audioInstances } = useSoundStore.getState();
-      const instance = audioInstances.get(playingId);
-      
-      if (instance) {
-        // Set up onend callback
-        instance.once('end', () => {
-          setPlayingId(null);
-        });
-      }
+  // El evento 'end' ahora se maneja en el store
+
+  const handleDelete = (soundId: string) => {
+    removeSound(soundId);
+    
+    // Si el sonido eliminado era el seleccionado, deseleccionarlo
+    if (selectedSoundId === soundId) {
+      setSelectedSoundId(null);
     }
-  }, [playingId]);
-
-  const handleDelete = async (soundId: string) => {
-    try {
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("sounds")
-        .delete()
-        .eq("id", soundId);
-
-      if (error) throw error;
-
-      removeSound(soundId);
-      toast.success("Sound deleted successfully");
-    } catch (error) {
-      toast.error("Failed to delete sound");
+  };
+  
+  // Función para seleccionar un sonido y configurar una tecla
+  const handleSelectSound = async (soundId: string) => {
+    // Si el sonido ya está seleccionado, lo deseleccionamos
+    if (selectedSoundId === soundId) {
+      setSelectedSoundId(null);
+      setSelectedKey(null); // Restablecer el estado de KeyConfig
+      toast.info("Configuración de tecla cancelada");
+      return;
+    }
+    
+    // Seleccionar el nuevo sonido
+    setSelectedSoundId(soundId);
+    
+    // Obtener el estado actual de streamDeckKeys
+    const currentStreamDeckKeys = useSoundStore.getState().streamDeckKeys;
+    
+    // Buscar si ya existe una tecla con este sonido
+    const existingKey = currentStreamDeckKeys.find(key => key.sound_id === soundId);
+    
+    if (existingKey) {
+      // Si ya existe una tecla con este sonido, seleccionarla
+      setSelectedKey(existingKey);
+      toast.info("Tecla seleccionada para configuración");
+    } else {
+      // Si no existe una tecla con este sonido, crear una nueva
+      try {
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          toast.error("Usuario no autenticado");
+          return;
+        }
+        
+        // Obtener la posición más alta actual
+        const highestPosition = currentStreamDeckKeys.length > 0 
+          ? Math.max(...currentStreamDeckKeys.map(key => key.position)) 
+          : -1;
+        
+        const newPosition = highestPosition + 1;
+        
+        // Obtener el nombre del sonido
+        const sound = sounds.find(s => s.id === soundId);
+        
+        if (!sound) {
+          toast.error("Sonido no encontrado");
+          return;
+        }
+        
+        // Crear una nueva tecla
+        const newKey: Omit<StreamDeckKey, 'id' | 'created_at'> = {
+          user_id: user.id,
+          sound_id: soundId,
+          position: newPosition,
+          label: sound.name,
+          color: "#FF5733", // Color por defecto
+          icon: null,
+          hotkey: null
+        };
+        
+        const { data: insertedKey, error } = await supabase
+          .from('stream_deck_keys')
+          .insert(newKey)
+          .select()
+          .single();
+        
+        if (error) {
+          throw error;
+        }
+        
+        // Actualizar el store y seleccionar la nueva tecla
+        const { setStreamDeckKeys } = useSoundStore.getState();
+        setStreamDeckKeys([...currentStreamDeckKeys, insertedKey]);
+        setSelectedKey(insertedKey);
+        
+        toast.success("Nueva tecla creada y seleccionada");
+      } catch (error) {
+        console.error("Error al crear la tecla:", error);
+        toast.error("Error al crear la tecla");
+      }
     }
   };
 
@@ -153,7 +223,7 @@ export function SoundLibrary() {
                   size="icon"
                   onClick={() => handlePlay(sound.id)}
                 >
-                  {playingId === sound.id ? (
+                  {currentlyPlayingId === sound.id ? (
                     <Square className="h-4 w-4" />
                   ) : (
                     <Play className="h-4 w-4" />
@@ -162,7 +232,22 @@ export function SoundLibrary() {
                 <Button
                   variant="ghost"
                   size="icon"
+                  className={`
+                    transition-colors duration-200
+                    hover:bg-primary/10 hover:text-primary
+                    active:bg-primary/30 active:text-primary
+                    ${selectedSoundId === sound.id ? 'bg-primary/20 text-primary ring-1 ring-primary' : ''}
+                  `}
+                  onClick={() => handleSelectSound(sound.id)}
+                  title="Seleccionar para configurar tecla"
+                >
+                  <Key className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
                   onClick={() => handleDelete(sound.id)}
+                  disabled={isRemoving}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

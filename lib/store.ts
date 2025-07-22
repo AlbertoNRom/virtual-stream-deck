@@ -10,6 +10,7 @@ interface SoundStore {
   selectedKey: StreamDeckKey | null;
   gridConfig: GridConfig;
   audioInstances: Map<string, Howl>;
+  currentlyPlayingId: string | null;
   setSounds: (sounds: Sound[]) => void;
   addSound: (sound: Sound) => void;
   removeSound: (id: string) => void;
@@ -28,6 +29,7 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
   selectedKey: null,
   gridConfig: { rows: 1, columns: 3 },
   audioInstances: new Map(),
+  currentlyPlayingId: null,
 
   setSounds: (sounds) => {
     // First, clean up existing instances
@@ -117,13 +119,26 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
     });
 
     instance.play();
+    
+    // Set the currently playing sound ID
+    set({ currentlyPlayingId: soundId });
+    
+    // Add an event listener to reset the playing ID when the sound ends
+    instance.once('end', () => {
+      set({ currentlyPlayingId: null });
+    });
   },
   
   stopSound: (soundId) => {
-    const { audioInstances } = get();
+    const { audioInstances, currentlyPlayingId } = get();
     const instance = audioInstances.get(soundId);
     if (instance) {
       instance.stop();
+      
+      // Reset the currently playing ID if this was the playing sound
+      if (currentlyPlayingId === soundId) {
+        set({ currentlyPlayingId: null });
+      }
     }
   },
 
@@ -132,5 +147,8 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
     audioInstances.forEach((instance) => {
       instance.stop();
     });
+    
+    // Reset the currently playing ID
+    set({ currentlyPlayingId: null });
   },
 }));

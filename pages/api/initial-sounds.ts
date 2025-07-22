@@ -66,7 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         label: 'Glass Break',
         color: '#FF5733',
         icon: 'sound effect',
-        hotkey: 'Ctrl+1'
+        hotkey: 'ctrl+1' // Already in lowercase
       },
       {
         user_id: userId,
@@ -75,7 +75,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         label: 'Cinematic Hit 3',
         color: '#33FF57',
         icon: 'sound effect',
-        hotkey: 'Ctrl+2'
+        hotkey: 'ctrl+2' // Already in lowercase
       },
       {
         user_id: userId,
@@ -84,7 +84,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         label: 'Police Siren',
         color: '#3357FF',
         icon: 'alarm',
-        hotkey: 'Ctrl+3'
+        hotkey: 'ctrl+3' // Already in lowercase
       }
     ];
 

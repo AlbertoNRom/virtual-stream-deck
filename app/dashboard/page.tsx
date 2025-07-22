@@ -20,6 +20,8 @@ export default async function Dashboard() {
     await (await supabase).auth.signOut();
     redirect('/');
   };
+  
+  // Nota: El selectedKey se maneja a través del estado global en useSoundStore
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/90 p-6">
@@ -52,7 +54,7 @@ export default async function Dashboard() {
           
           {/* Key Configuration */}
           <div className="col-span-3">
-            <KeyConfig selectedKey={null} />
+            <KeyConfig />
           </div>
         </div>
       </div>

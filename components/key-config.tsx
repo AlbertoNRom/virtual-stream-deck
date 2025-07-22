@@ -1,8 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,6 +8,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -17,19 +17,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import type { StreamDeckKey } from "@/lib/types";
 import { useSoundStore } from "@/lib/store";
+import type { StreamDeckKey } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-interface KeyConfigProps {
-  selectedKey: StreamDeckKey | null;
-}
-
-export function KeyConfig({ selectedKey }: KeyConfigProps) {
+export function KeyConfig() {
+  const { sounds, updateKey, selectedKey } = useSoundStore();
   const [config, setConfig] = useState(selectedKey);
-  const { sounds, updateKey } = useSoundStore();
 
   useEffect(() => {
     setConfig(selectedKey);
@@ -50,6 +46,9 @@ export function KeyConfig({ selectedKey }: KeyConfigProps) {
     if (!config) return;
 
     try {
+      console.log("[KeyConfig] Saving configuration:", JSON.stringify(config));
+      console.log("[KeyConfig] Hotkey to save:", config.hotkey);
+      
       const supabase = createClient();
       const { error } = await supabase
         .from("stream_deck_keys")
@@ -60,7 +59,9 @@ export function KeyConfig({ selectedKey }: KeyConfigProps) {
 
       updateKey(config);
       toast.success("Key configuration saved");
+      console.log("[KeyConfig] Configuration saved successfully");
     } catch (error) {
+      console.error("[KeyConfig] Error saving:", error);
       toast.error("Failed to save key configuration");
     }
   };
@@ -118,10 +119,18 @@ export function KeyConfig({ selectedKey }: KeyConfigProps) {
           <Input
             id="hotkey"
             value={config?.hotkey || ""}
-            onChange={(e) =>
-              setConfig(config ? { ...config, hotkey: e.target.value } : null)
-            }
+            onChange={(e) => {
+              // Convert to lowercase to ensure compatibility with react-hotkeys-hook
+              const normalizedHotkey = e.target.value.toLowerCase();
+              console.log("Normalized hotkey:", normalizedHotkey);
+              setConfig(config ? { ...config, hotkey: normalizedHotkey } : null);
+            }}
+            placeholder="e.g.: ctrl+1, shift+a"
           />
+          <p className="text-xs text-muted-foreground">
+            Format: use combinations like <code>ctrl+1</code>, <code>shift+a</code>, <code>alt+s</code>. 
+            All keys must be lowercase. Do not use spaces or commas.
+          </p>
         </div>
         <Button
           className="w-full"
