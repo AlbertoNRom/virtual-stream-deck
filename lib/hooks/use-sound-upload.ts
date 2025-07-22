@@ -7,15 +7,30 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { capitalizeAndRemoveExtension } from "../utils";
 
+const MAX_SOUNDS_PER_USER = 9;
+const MAX_SOUND_SIZE_MB = 2; 
+const MAX_SOUND_SIZE_BYTES = MAX_SOUND_SIZE_MB * 1024 * 1024;
+
 export function useSoundUpload() {
   const [isUploading, setIsUploading] = useState(false);
   const addSound = useSoundStore((state) => state.addSound);
+  const sounds = useSoundStore((state) => state.sounds);
   const supabase = createClient();
 
   const uploadSound = async (file: File) => {
     try {
       setIsUploading(true);
       const { data: { user }} = await supabase.auth.getUser();
+      
+      if (file.size > MAX_SOUND_SIZE_BYTES) {
+        toast.error(`El archivo es demasiado grande. El tamaño máximo es ${MAX_SOUND_SIZE_MB}MB`);
+        return;
+      }
+      
+      if (sounds.length >= MAX_SOUNDS_PER_USER) {
+        toast.error(`Has alcanzado el límite de ${MAX_SOUNDS_PER_USER} sonidos. Elimina alguno para añadir más.`);
+        return;
+      }
 
       // Upload file to Supabase Storage
       const filename = `${user?.id}/${file.name}`;

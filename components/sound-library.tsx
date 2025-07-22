@@ -42,10 +42,23 @@ export function SoundLibrary() {
       'audio/*': ['.mp3', '.wav']
     },
     onDrop: async (acceptedFiles) => {
-      for (const file of acceptedFiles) {
+      if (sounds.length >= 9) {
+        toast.error('Has alcanzado el límite de 9 sonidos. Elimina alguno para añadir más.');
+        return;
+      }
+
+      const remainingSlots = 9 - sounds.length;
+      const filesToUpload = acceptedFiles.slice(0, remainingSlots);
+      
+      if (acceptedFiles.length > remainingSlots) {
+        toast.warning(`Solo se cargarán ${remainingSlots} de ${acceptedFiles.length} sonidos debido al límite.`);
+      }
+      
+      for (const file of filesToUpload) {
         await uploadSound(file);
       }
-    }
+    },
+    disabled: sounds.length >= 9 
   });
 
   useEffect(() => {
@@ -199,6 +212,8 @@ export function SoundLibrary() {
           {...getRootProps()}
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
             isDragActive ? "border-primary bg-primary/10" : "border-muted"
+          } ${
+            sounds.length >= 9 ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
           <input {...getInputProps()} />
@@ -206,10 +221,31 @@ export function SoundLibrary() {
           <p className="text-sm text-muted-foreground">
             {isUploading
               ? "Uploading..."
-              : "Drag & drop audio files here, or click to select files"}
+              : sounds.length >= 9
+                ? "Límite de sonidos alcanzado. Elimina alguno para añadir más."
+                : "Drag & drop audio files here, or click to select files"}
           </p>
+          <div className="mt-2 text-xs text-muted-foreground">
+            <p>Supported formats: MP3, WAV | Tamaño máximo: 2MB | Límite: {sounds.length}/9 sonidos</p>
+          </div>
         </div>
 
+        {/* Mostrar advertencia cuando el usuario esté cerca del límite */}
+        {sounds.length >= 7 && sounds.length < 9 && (
+          <div className="p-3 mb-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-sm">
+            <p className="font-medium text-yellow-500">¡Atención! Estás cerca del límite de sonidos</p>
+            <p className="text-xs text-muted-foreground mt-1">Tienes {sounds.length} de 9 sonidos permitidos.</p>
+          </div>
+        )}
+        
+        {/* Mostrar error cuando el usuario alcance el límite */}
+        {sounds.length >= 9 && (
+          <div className="p-3 mb-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm">
+            <p className="font-medium text-red-500">Has alcanzado el límite de sonidos</p>
+            <p className="text-xs text-muted-foreground mt-1">Elimina algún sonido para poder añadir más.</p>
+          </div>
+        )}
+        
         <div className="space-y-2">
           {filteredSounds.map((sound) => (
             <div
