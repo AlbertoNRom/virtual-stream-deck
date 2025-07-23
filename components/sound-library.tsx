@@ -43,7 +43,7 @@ export function SoundLibrary() {
     },
     onDrop: async (acceptedFiles) => {
       if (sounds.length >= 9) {
-        toast.error('Has alcanzado el límite de 9 sonidos. Elimina alguno para añadir más.');
+        toast.error('You have reached the limit of 9 sounds. Delete some to add more.');
         return;
       }
 
@@ -103,62 +103,62 @@ export function SoundLibrary() {
     }
   };
   
-  // Función para seleccionar un sonido y configurar una tecla
+  // Function to select a sound and configure a key
   const handleSelectSound = async (soundId: string) => {
-    // Si el sonido ya está seleccionado, lo deseleccionamos
+    // If the sound is already selected, deselect it
     if (selectedSoundId === soundId) {
       setSelectedSoundId(null);
-      setSelectedKey(null); // Restablecer el estado de KeyConfig
-      toast.info("Configuración de tecla cancelada");
+      setSelectedKey(null); // Reset KeyConfig state
+      toast.info("Key configuration cancelled");
       return;
     }
     
-    // Seleccionar el nuevo sonido
+    // Select the new sound
     setSelectedSoundId(soundId);
     
-    // Obtener el estado actual de streamDeckKeys
+    // Get current streamDeckKeys state
     const currentStreamDeckKeys = useSoundStore.getState().streamDeckKeys;
     
-    // Buscar si ya existe una tecla con este sonido
+    // Check if a key with this sound already exists
     const existingKey = currentStreamDeckKeys.find(key => key.sound_id === soundId);
     
     if (existingKey) {
-      // Si ya existe una tecla con este sonido, seleccionarla
+      // If a key with this sound already exists, select it
       setSelectedKey(existingKey);
-      toast.info("Tecla seleccionada para configuración");
+      toast.info("Key selected for configuration");
     } else {
-      // Si no existe una tecla con este sonido, crear una nueva
+      // If no key with this sound exists, create a new one
       try {
         const supabase = createClient();
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user) {
-          toast.error("Usuario no autenticado");
+          toast.error("User not authenticated");
           return;
         }
         
-        // Obtener la posición más alta actual
+        // Get the current highest position
         const highestPosition = currentStreamDeckKeys.length > 0 
           ? Math.max(...currentStreamDeckKeys.map(key => key.position)) 
           : -1;
         
         const newPosition = highestPosition + 1;
         
-        // Obtener el nombre del sonido
+        // Get the sound name
         const sound = sounds.find(s => s.id === soundId);
         
         if (!sound) {
-          toast.error("Sonido no encontrado");
+          toast.error("Sound not found");
           return;
         }
         
-        // Crear una nueva tecla
+        // Create a new key
         const newKey: Omit<StreamDeckKey, 'id' | 'created_at'> = {
           user_id: user.id,
           sound_id: soundId,
           position: newPosition,
           label: sound.name,
-          color: "#FF5733", // Color por defecto
+          color: "#FF5733", // Default color
           icon: null,
           hotkey: null
         };
@@ -173,15 +173,15 @@ export function SoundLibrary() {
           throw error;
         }
         
-        // Actualizar el store y seleccionar la nueva tecla
+        // Update store and select the new key
         const { setStreamDeckKeys } = useSoundStore.getState();
         setStreamDeckKeys([...currentStreamDeckKeys, insertedKey]);
         setSelectedKey(insertedKey);
         
-        toast.success("Nueva tecla creada y seleccionada");
+        toast.success("New key created and selected");
       } catch (error) {
-        console.error("Error al crear la tecla:", error);
-        toast.error("Error al crear la tecla");
+        console.error("Error creating key:", error);
+        toast.error("Error creating key");
       }
     }
   };
@@ -191,9 +191,9 @@ export function SoundLibrary() {
       <CardHeader className="p-4 sm:p-6">
         <CardTitle className="text-lg sm:text-xl">Sound Library</CardTitle>
         <CardDescription className="text-sm sm:text-base">Manage your sound collection</CardDescription>
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex flex-col gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search sounds..."
               value={search}
@@ -201,7 +201,17 @@ export function SoundLibrary() {
               className="pl-8 text-sm sm:text-base"
             />
           </div>
-          <Button variant="outline" className="shrink-0 text-sm sm:text-base">
+          <Button 
+            variant="outline" 
+            className="shrink-0 text-sm sm:text-base"
+            onClick={() => {
+              const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+              if (input) {
+                input.click();
+              }
+            }}
+            disabled={sounds.length >= 9}
+          >
             <Upload className="h-4 w-4 mr-2" />
             <span className="hidden sm:inline">Upload</span>
           </Button>
@@ -222,27 +232,27 @@ export function SoundLibrary() {
             {isUploading
               ? "Uploading..."
               : sounds.length >= 9
-                ? "Límite de sonidos alcanzado. Elimina alguno para añadir más."
+                ? "Sound limit reached. Delete some to add more."
                 : "Drag & drop audio files here, or click to select files"}
           </p>
           <div className="mt-1 sm:mt-2 text-xs text-muted-foreground">
-            <p>Supported formats: MP3 | Max size: 2MB | Limit: {sounds.length}/9 sounds</p>
+            <p>Supported formats: MP3, WAV | Max size: 5MB | Limit: {sounds.length}/9 sounds</p>
           </div>
         </div>
 
-        {/* Mostrar advertencia cuando el usuario esté cerca del límite */}
+        {/* Show warning when user is close to the limit */}
         {sounds.length >= 7 && sounds.length < 9 && (
           <div className="p-2 sm:p-3 mb-2 sm:mb-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs sm:text-sm">
-            <p className="font-medium text-yellow-500">¡Atención! Estás cerca del límite de sonidos</p>
-            <p className="text-xs text-muted-foreground mt-1">Tienes {sounds.length} de 9 sonidos permitidos.</p>
+            <p className="font-medium text-yellow-500">Warning! You are close to the sound limit</p>
+            <p className="text-xs text-muted-foreground mt-1">You have {sounds.length} of 9 allowed sounds.</p>
           </div>
         )}
         
-        {/* Mostrar error cuando el usuario alcance el límite */}
+        {/* Show error when user reaches the limit */}
         {sounds.length >= 9 && (
           <div className="p-2 sm:p-3 mb-2 sm:mb-3 bg-red-500/10 border border-red-500/30 rounded-lg text-xs sm:text-sm">
-            <p className="font-medium text-red-500">Has alcanzado el límite de sonidos</p>
-            <p className="text-xs text-muted-foreground mt-1">Elimina algún sonido para poder añadir más.</p>
+            <p className="font-medium text-red-500">You have reached the sound limit</p>
+            <p className="text-xs text-muted-foreground mt-1">Delete some sounds to add more.</p>
           </div>
         )}
         
@@ -277,7 +287,7 @@ export function SoundLibrary() {
                     ${selectedSoundId === sound.id ? 'bg-primary/20 text-primary ring-1 ring-primary' : ''}
                   `}
                   onClick={() => handleSelectSound(sound.id)}
-                  title="Seleccionar para configurar tecla"
+                  title="Select to configure key"
                 >
                   <Key className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>

@@ -1,0 +1,27 @@
+{
+  "name": "Virtual Stream Deck - Professional Sound Board",
+  "short_name": "Stream Deck",
+  "description": "Professional sound board with customizable hotkeys and real-time audio control for streamers and content creators",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["entertainment", "music", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable any"
+    }
+  ]
+}

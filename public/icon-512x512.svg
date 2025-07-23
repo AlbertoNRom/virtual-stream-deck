@@ -1,0 +1,9 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="64" fill="hsl(180 100% 50%)"/>
+  <g transform="translate(170, 128)">
+    <circle cx="42" cy="214" r="32" fill="white"/>
+    <ellipse cx="42" cy="214" rx="32" ry="22" fill="white"/>
+    <rect x="74" y="86" width="8" height="128" fill="white"/>
+    <path d="M74 86 Q106 64 138 74 Q128 86 106 96 Q86 106 74 118" fill="white"/>
+  </g>
+</svg>

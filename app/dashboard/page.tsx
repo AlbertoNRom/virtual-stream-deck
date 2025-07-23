@@ -5,6 +5,18 @@ import { StreamDeckGrid } from '@/components/stream-deck-grid';
 import { KeyConfig } from '@/components/key-config';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Dashboard - Virtual Stream Deck',
+  description: 'Manage your sound library and configure your stream deck with custom audio clips for professional streaming.',
+  keywords: ['dashboard', 'sound board', 'stream deck', 'audio clips', 'streaming', 'content creation'],
+  openGraph: {
+    title: 'Dashboard - Virtual Stream Deck',
+    description: 'Manage your sound library and configure your stream deck with custom audio clips for professional streaming.',
+    type: 'website',
+  },
+};
 
 export default async function Dashboard() {
   const supabase = createClient();
@@ -21,7 +33,7 @@ export default async function Dashboard() {
     redirect('/');
   };
   
-  // Nota: El selectedKey se maneja a través del estado global en useSoundStore
+  // Note: The selectedKey is managed through global state in useSoundStore
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/90 p-4 sm:p-6">
@@ -39,7 +51,7 @@ export default async function Dashboard() {
           </form>
         </div>
         
-        {/* Layout responsive: móvil (1 columna), tablet (2 columnas), desktop (3 columnas) */}
+        {/* Responsive layout: mobile (1 column), tablet (2 columns), desktop (3 columns) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
           {/* Sound Library */}
           <div className="lg:col-span-3 order-1 lg:order-1">
