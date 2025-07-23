@@ -226,7 +226,7 @@ export function SoundLibrary() {
                 : "Drag & drop audio files here, or click to select files"}
           </p>
           <div className="mt-1 sm:mt-2 text-xs text-muted-foreground">
-            <p>Supported formats: MP3, WAV | Tamaño máximo: 5MB | Límite: {sounds.length}/9 sonidos</p>
+            <p>Supported formats: MP3 | Max size: 2MB | Limit: {sounds.length}/9 sounds</p>
           </div>
         </div>
 
