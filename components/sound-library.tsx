@@ -188,51 +188,51 @@ export function SoundLibrary() {
 
   return (
     <Card className="h-full glassmorphism">
-      <CardHeader>
-        <CardTitle>Sound Library</CardTitle>
-        <CardDescription>Manage your sound collection</CardDescription>
-        <div className="flex gap-2">
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="text-lg sm:text-xl">Sound Library</CardTitle>
+        <CardDescription className="text-sm sm:text-base">Manage your sound collection</CardDescription>
+        <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search sounds..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-8"
+              className="pl-8 text-sm sm:text-base"
             />
           </div>
-          <Button variant="outline" className="shrink-0">
+          <Button variant="outline" className="shrink-0 text-sm sm:text-base">
             <Upload className="h-4 w-4 mr-2" />
-            Upload
+            <span className="hidden sm:inline">Upload</span>
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+          className={`border-2 border-dashed rounded-lg p-4 sm:p-6 lg:p-8 text-center transition-colors ${
             isDragActive ? "border-primary bg-primary/10" : "border-muted"
           } ${
             sounds.length >= 9 ? "opacity-50 cursor-not-allowed" : ""
           }`}
         >
           <input {...getInputProps()} />
-          <Upload className="h-8 w-8 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">
+          <Upload className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 sm:mb-4 text-muted-foreground" />
+          <p className="text-xs sm:text-sm text-muted-foreground">
             {isUploading
               ? "Uploading..."
               : sounds.length >= 9
                 ? "Límite de sonidos alcanzado. Elimina alguno para añadir más."
                 : "Drag & drop audio files here, or click to select files"}
           </p>
-          <div className="mt-2 text-xs text-muted-foreground">
-            <p>Supported formats: MP3, WAV | Tamaño máximo: 2MB | Límite: {sounds.length}/9 sonidos</p>
+          <div className="mt-1 sm:mt-2 text-xs text-muted-foreground">
+            <p>Supported formats: MP3, WAV | Tamaño máximo: 5MB | Límite: {sounds.length}/9 sonidos</p>
           </div>
         </div>
 
         {/* Mostrar advertencia cuando el usuario esté cerca del límite */}
         {sounds.length >= 7 && sounds.length < 9 && (
-          <div className="p-3 mb-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-sm">
+          <div className="p-2 sm:p-3 mb-2 sm:mb-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg text-xs sm:text-sm">
             <p className="font-medium text-yellow-500">¡Atención! Estás cerca del límite de sonidos</p>
             <p className="text-xs text-muted-foreground mt-1">Tienes {sounds.length} de 9 sonidos permitidos.</p>
           </div>
@@ -240,35 +240,37 @@ export function SoundLibrary() {
         
         {/* Mostrar error cuando el usuario alcance el límite */}
         {sounds.length >= 9 && (
-          <div className="p-3 mb-3 bg-red-500/10 border border-red-500/30 rounded-lg text-sm">
+          <div className="p-2 sm:p-3 mb-2 sm:mb-3 bg-red-500/10 border border-red-500/30 rounded-lg text-xs sm:text-sm">
             <p className="font-medium text-red-500">Has alcanzado el límite de sonidos</p>
             <p className="text-xs text-muted-foreground mt-1">Elimina algún sonido para poder añadir más.</p>
           </div>
         )}
         
-        <div className="space-y-2">
+        <div className="space-y-1 sm:space-y-2">
           {filteredSounds.map((sound) => (
             <div
               key={sound.id}
-              className="flex items-center justify-between p-2 rounded-lg bg-muted/50"
+              className="flex items-center justify-between p-2 sm:p-3 rounded-lg bg-muted/50"
             >
-              <span className="truncate flex-1">{sound.name}</span>
-              <div className="flex gap-2">
+              <span className="truncate flex-1 text-sm sm:text-base">{sound.name}</span>
+              <div className="flex gap-1 sm:gap-2">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => handlePlay(sound.id)}
+                  className="h-8 w-8 sm:h-10 sm:w-10"
                 >
                   {currentlyPlayingId === sound.id ? (
-                    <Square className="h-4 w-4" />
+                    <Square className="h-3 w-3 sm:h-4 sm:w-4" />
                   ) : (
-                    <Play className="h-4 w-4" />
+                    <Play className="h-3 w-3 sm:h-4 sm:w-4" />
                   )}
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   className={`
+                    h-8 w-8 sm:h-10 sm:w-10
                     transition-colors duration-200
                     hover:bg-primary/10 hover:text-primary
                     active:bg-primary/30 active:text-primary
@@ -277,15 +279,16 @@ export function SoundLibrary() {
                   onClick={() => handleSelectSound(sound.id)}
                   title="Seleccionar para configurar tecla"
                 >
-                  <Key className="h-4 w-4" />
+                  <Key className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => handleDelete(sound.id)}
                   disabled={isRemoving}
+                  className="h-8 w-8 sm:h-10 sm:w-10"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
             </div>

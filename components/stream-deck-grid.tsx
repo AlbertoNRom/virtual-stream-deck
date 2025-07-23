@@ -66,7 +66,7 @@ function SortableItem({ id, keyData, config }: { id: string; keyData: StreamDeck
       {...listeners}
       className={cn(
         "grid-key group relative cursor-grab touch-none",
-        "h-32 w-32 rounded-xl border-2 border-border p-6 shadow-xl",
+        "h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 rounded-lg sm:rounded-xl border-2 border-border p-2 sm:p-4 md:p-6 shadow-xl",
         "transition-all duration-200 ease-in-out hover:shadow-2xl",
         "flex items-center justify-center text-center",
         "active:cursor-grabbing active:scale-95",
@@ -77,7 +77,7 @@ function SortableItem({ id, keyData, config }: { id: string; keyData: StreamDeck
     >
       <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-transparent via-black/10 to-black/20 opacity-60" />
       <div className="absolute inset-0 rounded-xl bg-black/10 opacity-0 transition-opacity group-hover:opacity-20" />
-      <span className="z-10 text-lg font-semibold text-foreground drop-shadow-md">
+      <span className="z-10 text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground drop-shadow-md break-words">
         {keyData?.label || `Key ${Number.parseInt(id.split("-")[1]) + 1}`}
       </span>
     </div>
@@ -160,13 +160,13 @@ export function StreamDeckGrid({ config }: StreamDeckGridProps) {
         strategy={rectSortingStrategy}
       >
         <div
-          className="grid gap-8 p-8"
+          className="grid gap-2 sm:gap-4 md:gap-6 lg:gap-8 p-2 sm:p-4 md:p-6 lg:p-8"
           style={{
             gridTemplateColumns: `repeat(${config.columns}, minmax(0, 1fr))`,
           }}
         >
           {streamDeckKeys.length === 0 ? (
-            <div className="col-span-full text-center text-xl text-muted-foreground">
+            <div className="col-span-full text-center text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground">
               No keys configured. Click to add new keys.
             </div>
           ) : streamDeckKeys.map((item) => (

@@ -24,36 +24,37 @@ export default async function Dashboard() {
   // Nota: El selectedKey se maneja a través del estado global en useSoundStore
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/90 p-6">
-      <div className="mx-auto max-w-7xl space-y-6">
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/90 p-4 sm:p-6">
+      <div className="mx-auto max-w-7xl space-y-4 sm:space-y-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-bold text-primary">Dashboard</h1>
-            <p className="text-muted-foreground">Welcome, <b>{user.user_metadata.full_name ?? user.email}</b></p>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-primary">Dashboard</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">Welcome, <b>{user.user_metadata.full_name ?? user.email}</b></p>
           </div>
           <form action={signOut}>
-            <Button variant="ghost" className="gap-2">
+            <Button variant="ghost" className="gap-2 text-sm sm:text-base">
               <LogOut className="h-4 w-4" />
-              Logout
+              <span className="hidden sm:inline">Logout</span>
             </Button>
           </form>
         </div>
         
-        <div className="grid grid-cols-12 gap-6">
+        {/* Layout responsive: móvil (1 columna), tablet (2 columnas), desktop (3 columnas) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
           {/* Sound Library */}
-          <div className="col-span-3">
+          <div className="lg:col-span-3 order-1 lg:order-1">
             <SoundLibrary />
           </div>
           
           {/* Stream Deck Grid */}
-          <div className="col-span-6">
-            <div className="glassmorphism rounded-lg p-6">
+          <div className="lg:col-span-6 order-3 lg:order-2">
+            <div className="glassmorphism rounded-lg p-4 sm:p-6">
               <StreamDeckGrid config={{ rows: 3, columns: 3 }} />
             </div>
           </div>
           
           {/* Key Configuration */}
-          <div className="col-span-3">
+          <div className="lg:col-span-3 order-2 lg:order-3">
             <KeyConfig />
           </div>
         </div>

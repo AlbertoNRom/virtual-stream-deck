@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   title: 'Virtual Stream Deck',
   description: 'A customizable virtual stream deck with sound management',
   keywords: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Virtual Stream Deck', 'Soundboard'],
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
   robots: {
     index: true,
     follow: true,

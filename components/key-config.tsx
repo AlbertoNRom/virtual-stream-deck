@@ -72,9 +72,9 @@ export function KeyConfig() {
         <CardTitle>Key Configuration</CardTitle>
         <CardDescription>Customize selected key</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
         <div className="space-y-2">
-          <Label htmlFor="sound">Sound</Label>
+          <Label htmlFor="sound" className="text-sm sm:text-base">Sound</Label>
           <Select
             value={config?.sound_id || ""}
             onValueChange={(value) =>
@@ -94,17 +94,18 @@ export function KeyConfig() {
           </Select>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="label">Label</Label>
+          <Label htmlFor="label" className="text-sm sm:text-base">Label</Label>
           <Input
             id="label"
             value={config?.label || ""}
             onChange={(e) =>
               setConfig(config ? { ...config, label: e.target.value } : null)
             }
+            className="text-sm sm:text-base"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="color">Color</Label>
+          <Label htmlFor="color" className="text-sm sm:text-base">Color</Label>
           <Input
             id="color"
             type="color"
@@ -112,10 +113,11 @@ export function KeyConfig() {
             onChange={(e) =>
               setConfig(config ? { ...config, color: e.target.value } : null)
             }
+            className="h-10 sm:h-12"
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="hotkey">Hotkey</Label>
+          <Label htmlFor="hotkey" className="text-sm sm:text-base">Hotkey</Label>
           <Input
             id="hotkey"
             value={config?.hotkey || ""}
@@ -126,14 +128,15 @@ export function KeyConfig() {
               setConfig(config ? { ...config, hotkey: normalizedHotkey } : null);
             }}
             placeholder="e.g.: ctrl+1, shift+a"
+            className="text-sm sm:text-base"
           />
-          <p className="text-xs text-muted-foreground">
-            Format: use combinations like <code>ctrl+1</code>, <code>shift+a</code>, <code>alt+s</code>. 
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Format: use combinations like <code className="text-xs">ctrl+1</code>, <code className="text-xs">shift+a</code>, <code className="text-xs">alt+s</code>. 
             All keys must be lowercase. Do not use spaces or commas.
           </p>
         </div>
         <Button
-          className="w-full"
+          className="w-full text-sm sm:text-base py-2 sm:py-3"
           onClick={handleSave}
         >
           Save Changes
