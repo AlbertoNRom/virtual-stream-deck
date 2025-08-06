@@ -97,6 +97,7 @@ export function KeyConfig() {
           <Label htmlFor="label" className="text-sm sm:text-base">Label</Label>
           <Input
             id="label"
+            data-testid="label-input"
             value={config?.label || ""}
             onChange={(e) =>
               setConfig(config ? { ...config, label: e.target.value } : null)
@@ -108,6 +109,7 @@ export function KeyConfig() {
           <Label htmlFor="color" className="text-sm sm:text-base">Color</Label>
           <Input
             id="color"
+            data-testid="color-input"
             type="color"
             value={config?.color || "#00ffff"}
             onChange={(e) =>
@@ -120,6 +122,7 @@ export function KeyConfig() {
           <Label htmlFor="hotkey" className="text-sm sm:text-base">Hotkey</Label>
           <Input
             id="hotkey"
+            data-testid="hotkey-input"
             value={config?.hotkey || ""}
             onChange={(e) => {
               // Convert to lowercase to ensure compatibility with react-hotkeys-hook

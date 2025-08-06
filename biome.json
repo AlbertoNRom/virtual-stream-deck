@@ -25,6 +25,13 @@
 			},
 			"complexity": {
         		"noForEach": "off"
+      		},
+			"suspicious": {
+       			"noArrayIndexKey": "warn"
+      		},
+			"correctness": {
+       			"noUnusedVariables": "warn",
+       			"noUnusedLabels": "warn"
       		}
 		}
 	},

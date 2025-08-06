@@ -160,6 +160,7 @@ export function StreamDeckGrid({ config }: StreamDeckGridProps) {
         strategy={rectSortingStrategy}
       >
         <div
+          data-testid="stream-deck-grid"
           className="grid gap-2 sm:gap-4 md:gap-6 lg:gap-8 p-2 sm:p-4 md:p-6 lg:p-8"
           style={{
             gridTemplateColumns: `repeat(${config.columns}, minmax(0, 1fr))`,
