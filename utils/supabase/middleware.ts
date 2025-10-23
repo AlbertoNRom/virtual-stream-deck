@@ -6,16 +6,6 @@ export async function updateSession(request: NextRequest) {
     request,
   })
 
-  // Check if we're in E2E test mode by looking for Playwright user agent// Check if this is an E2E test
-  const userAgent = request.headers.get('user-agent') || ''
-  const isE2ETest = userAgent.includes('Playwright-E2E-Test') || process.env.NODE_ENV === 'test'
-  
-  // Skip authentication for E2E tests
-  if (isE2ETest) {
-    console.log('Middleware - Bypassing authentication for E2E test')
-    return supabaseResponse
-  }
-
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

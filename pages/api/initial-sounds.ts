@@ -28,25 +28,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         user_id: userId,
         name: 'Glass Break',
         url: `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/vsd-bucket/shared/8cfc46ad-4b46-44a6-b98d-0c9fa6c3ac3a.mp3`,
-        duration: 3.5,
-        tags: ['sound effect', 'impact'],
-        category: 'effects'
+        duration: 3.5
       },
       {
         user_id: userId,
         name: 'Cinematic Hit 3',
         url: `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/vsd-bucket/shared/8c588344-aef5-4c67-a03e-071af8441f69.mp3`,
-        duration: 2.8,
-        tags: ['sound effect', 'impact'],
-        category: 'effects'
+        duration: 2.8
       },
       {
         user_id: userId,
         name: 'Police Siren',
         url: `${env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/vsd-bucket/shared/cdabf94a-0b1c-4cf1-8ab9-5ed7c6ebbda9.mp3`,
         duration: 1.2,
-        tags: ['alarm'],
-        category: 'alerts'
       }
     ];
     // Insert sounds and get their IDs

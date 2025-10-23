@@ -6,12 +6,12 @@ import { useCallback, useMemo, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
 // Function to normalize a hotkey
-function normalizeHotkey(hotkey: string): string {
+const  normalizeHotkey = (hotkey: string): string => {
   if (!hotkey) return '';
   return hotkey.toLowerCase().trim();
 }
 
-export function useStreamDeckHotkeys() {
+export const useStreamDeckHotkeys = () => {
   const { streamDeckKeys, playSound } = useSoundStore();
   const [registeredHotkeys, setRegisteredHotkeys] = useState<Array<{hotkey: string, soundId: string}>>([]);
   

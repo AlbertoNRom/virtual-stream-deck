@@ -117,7 +117,7 @@ describe('StreamDeckGrid', () => {
     
     render(<StreamDeckGrid config={config} />)
     
-    const keyElement = screen.getByText('Test Key').closest('div')
+    const keyElement = screen.getByText('Test Key').closest('button')
     expect(keyElement).toHaveStyle({
       backgroundImage: 'linear-gradient(135deg, #FF5733, transparent)',
     })

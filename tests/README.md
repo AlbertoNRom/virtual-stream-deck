@@ -107,7 +107,6 @@ npm run test:all          # Ejecutar tests unitarios y E2E
 - ✅ Visualización de página de login
 - ✅ Opciones de autenticación
 - ✅ Redirección de usuarios no autenticados
-- ✅ Meta tags y título
 - ✅ Responsividad en móvil
 
 #### Dashboard E2E
@@ -119,7 +118,6 @@ npm run test:all          # Ejecutar tests unitarios y E2E
 - ✅ Botón de logout
 - ✅ Responsividad
 - ✅ Estados vacíos
-- ✅ Meta tags
 
 ## Mocks y Configuración
 

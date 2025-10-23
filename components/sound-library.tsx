@@ -9,13 +9,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useRemoveSound } from "@/lib/hooks/use-remove-sound";
-import { useSoundUpload } from "@/lib/hooks/use-sound-upload";
+import { useSoundLibraryBloc } from "@/lib/bloc/soundLibraryBloc";
 import { useSoundStore } from "@/lib/store";
 import type { StreamDeckKey } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
 import { Key, Play, Search, Square, Trash2, Upload } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 
@@ -27,13 +26,12 @@ export function SoundLibrary() {
     playSound, 
     stopSound, 
     currentlyPlayingId,
-    streamDeckKeys,
     setSelectedKey
   } = useSoundStore();
 
-  const { uploadSound, isUploading } = useSoundUpload();
-  const { removeSound, isRemoving } = useRemoveSound();
-  
+  // Hook BLoC reactivo
+  const { upload, remove, ensureKeyForSound, isUploading, isRemoving } = useSoundLibraryBloc();
+
   // Estado para el sonido seleccionado actualmente
   const [selectedSoundId, setSelectedSoundId] = useState<string | null>(null);
   
@@ -55,7 +53,12 @@ export function SoundLibrary() {
       }
       
       for (const file of filesToUpload) {
-        await uploadSound(file);
+        try {
+          await upload(file);
+        } catch (err) {
+          const message = err instanceof Error ? err.message : 'Failed to upload sound';
+          toast.error(message);
+        }
       }
     },
     disabled: sounds.length >= 9 
@@ -94,8 +97,13 @@ export function SoundLibrary() {
 
   // El evento 'end' ahora se maneja en el store
 
-  const handleDelete = (soundId: string) => {
-    removeSound(soundId);
+  const handleDelete = async (soundId: string) => {
+    try {
+      await remove(soundId);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to remove sound';
+      toast.error(message);
+    }
     
     // Si el sonido eliminado era el seleccionado, deseleccionarlo
     if (selectedSoundId === soundId) {
@@ -116,73 +124,17 @@ export function SoundLibrary() {
     // Select the new sound
     setSelectedSoundId(soundId);
     
-    // Get current streamDeckKeys state
-    const currentStreamDeckKeys = useSoundStore.getState().streamDeckKeys;
-    
-    // Check if a key with this sound already exists
-    const existingKey = currentStreamDeckKeys.find(key => key.sound_id === soundId);
-    
-    if (existingKey) {
-      // If a key with this sound already exists, select it
-      setSelectedKey(existingKey);
-      toast.info("Key selected for configuration");
-    } else {
-      // If no key with this sound exists, create a new one
-      try {
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (!user) {
-          toast.error("User not authenticated");
-          return;
-        }
-        
-        // Get the current highest position
-        const highestPosition = currentStreamDeckKeys.length > 0 
-          ? Math.max(...currentStreamDeckKeys.map(key => key.position)) 
-          : -1;
-        
-        const newPosition = highestPosition + 1;
-        
-        // Get the sound name
-        const sound = sounds.find(s => s.id === soundId);
-        
-        if (!sound) {
-          toast.error("Sound not found");
-          return;
-        }
-        
-        // Create a new key
-        const newKey: Omit<StreamDeckKey, 'id' | 'created_at'> = {
-          user_id: user.id,
-          sound_id: soundId,
-          position: newPosition,
-          label: sound.name,
-          color: "#FF5733", // Default color
-          icon: null,
-          hotkey: null
-        };
-        
-        const { data: insertedKey, error } = await supabase
-          .from('stream_deck_keys')
-          .insert(newKey)
-          .select()
-          .single();
-        
-        if (error) {
-          throw error;
-        }
-        
-        // Update store and select the new key
-        const { setStreamDeckKeys } = useSoundStore.getState();
-        setStreamDeckKeys([...currentStreamDeckKeys, insertedKey]);
-        setSelectedKey(insertedKey);
-        
-        toast.success("New key created and selected");
-      } catch (error) {
-        console.error("Error creating key:", error);
-        toast.error("Error creating key");
+    try {
+      const key = await ensureKeyForSound(soundId);
+      if (key) {
+        setSelectedKey(key);
+        toast.success("Key ready for configuration");
+      } else {
+        toast.error("No key found or created for this sound");
       }
+    } catch (error) {
+      console.error("Error ensuring key for sound:", error);
+      toast.error("Error ensuring key for sound");
     }
   };
 

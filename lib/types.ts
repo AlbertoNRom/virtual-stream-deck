@@ -5,8 +5,6 @@ export interface Sound {
   url: string;
   duration: number;
   created_at: string;
-  tags: string[];
-  category: string | null;
 }
 
 export interface StreamDeckKey {

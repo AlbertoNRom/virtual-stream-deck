@@ -23,6 +23,7 @@ import { useSoundStore } from "@/lib/store";
 import { useStreamDeckHotkeys } from "@/lib/hooks/use-hotkeys";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "sonner";
+import { useSoundLibraryBloc } from "@/lib/bloc/soundLibraryBloc";
 
 interface StreamDeckGridProps {
   config: GridConfig;
@@ -58,55 +59,43 @@ function SortableItem({ id, keyData, config }: { id: string; keyData: StreamDeck
     }
   };
 
+  const className = cn(
+    "relative aspect-square w-full p-2 sm:p-4 rounded-md shadow-sm cursor-grab",
+    isDragging ? "opacity-75" : "hover:shadow-md",
+    "flex items-center justify-center text-center select-none",
+    "bg-primary/5 border border-primary/10"
+  );
+
   return (
-    <div
+    <button
       ref={setNodeRef}
       style={style}
+      className={className}
       {...attributes}
       {...listeners}
-      className={cn(
-        "grid-key group relative cursor-grab touch-none",
-        "h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32 rounded-lg sm:rounded-xl border-2 border-border p-2 sm:p-4 md:p-6 shadow-xl",
-        "transition-all duration-200 ease-in-out hover:shadow-2xl",
-        "flex items-center justify-center text-center",
-        "active:cursor-grabbing active:scale-95",
-        "hover:z-10 hover:border-primary hover:bg-opacity-80",
-        isDragging && "opacity-50 shadow-2xl"
-      )}
+      type="button"
       onClick={handleClick}
+      aria-label={keyData.label || `Key ${keyData.position + 1}`}
     >
-      <div className="absolute inset-0 rounded-xl bg-gradient-to-b from-transparent via-black/10 to-black/20 opacity-60" />
-      <div className="absolute inset-0 rounded-xl bg-black/10 opacity-0 transition-opacity group-hover:opacity-20" />
-      <span className="z-10 text-xs sm:text-sm md:text-base lg:text-lg font-semibold text-foreground drop-shadow-md break-words">
-        {keyData?.label || `Key ${Number.parseInt(id.split("-")[1]) + 1}`}
+      <span className="text-xs sm:text-sm md:text-base lg:text-lg font-medium">
+        {keyData.label || `Key ${keyData.position + 1}`}
       </span>
-    </div>
+    </button>
   );
 }
 
 export function StreamDeckGrid({ config }: StreamDeckGridProps) {
   const { streamDeckKeys, setStreamDeckKeys } = useSoundStore();
 
+  const { loadInitialKeys, reorderKeys } = useSoundLibraryBloc();
+
   useStreamDeckHotkeys();
 
   useEffect(() => {
-    const loadKeys = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("stream_deck_keys")
-        .select("*")
-        .order("position");
-
-      if (error) {
-        toast.error("Failed to load stream deck configuration");
-        return;
-      }
-
-      setStreamDeckKeys(data);
-    };
-
-    loadKeys();
-  }, [setStreamDeckKeys]);
+    loadInitialKeys().catch(() => {
+      toast.error("Failed to load stream deck configuration");
+    });
+  }, [loadInitialKeys]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -137,18 +126,13 @@ export function StreamDeckGrid({ config }: StreamDeckGridProps) {
       })
     );
 
-    setStreamDeckKeys(newItems);
-
-    const supabase = createClient();
-    const { error } = await supabase
-      .from("stream_deck_keys")
-      .upsert(newItems);
-
-    if (error) {
+    try {
+      await reorderKeys(newItems);
+    } catch {
       toast.error("Failed to save key positions");
     }
   };
-
+  
   return (
     <DndContext
       sensors={sensors}

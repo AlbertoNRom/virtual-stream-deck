@@ -1,6 +1,6 @@
 import { useSoundStore } from '@/lib/store'
 import type { Sound, StreamDeckKey } from '@/lib/types'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 // Mock data
 const mockSound: Sound = {
@@ -9,8 +9,6 @@ const mockSound: Sound = {
   url: 'https://example.com/sound.mp3',
   user_id: 'user-1',
   duration: 5.5,
-  tags: ['test', 'audio'],
-  category: 'effects',
   created_at: '2024-01-01T00:00:00Z',
 }
 

@@ -17,19 +17,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useKeyConfigBloc } from "@/lib/bloc/keyConfigBloc";
 import { useSoundStore } from "@/lib/store";
-import type { StreamDeckKey } from "@/lib/types";
-import { createClient } from "@/utils/supabase/client";
-import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export function KeyConfig() {
   const { sounds, updateKey, selectedKey } = useSoundStore();
-  const [config, setConfig] = useState(selectedKey);
-
-  useEffect(() => {
-    setConfig(selectedKey);
-  }, [selectedKey]);
+  const [state, events] = useKeyConfigBloc(selectedKey, sounds, { updateKey });
+  const { config } = state;
 
   if (!selectedKey) {
     return (
@@ -43,25 +38,11 @@ export function KeyConfig() {
   }
 
   const handleSave = async () => {
-    if (!config) return;
-
-    try {
-      console.log("[KeyConfig] Saving configuration:", JSON.stringify(config));
-      console.log("[KeyConfig] Hotkey to save:", config.hotkey);
-      
-      const supabase = createClient();
-      const { error } = await supabase
-        .from("stream_deck_keys")
-        .update(config)
-        .eq("id", config.id);
-
-      if (error) throw error;
-
-      updateKey(config);
+    const res = await events.save();
+    if (res.ok) {
       toast.success("Key configuration saved");
-      console.log("[KeyConfig] Configuration saved successfully");
-    } catch (error) {
-      console.error("[KeyConfig] Error saving:", error);
+    } else {
+      console.error("[KeyConfig] Error saving:", res.error);
       toast.error("Failed to save key configuration");
     }
   };
@@ -77,9 +58,7 @@ export function KeyConfig() {
           <Label htmlFor="sound" className="text-sm sm:text-base">Sound</Label>
           <Select
             value={config?.sound_id || ""}
-            onValueChange={(value) =>
-              setConfig(config ? { ...config, sound_id: value } : null)
-            }
+            onValueChange={(value) => events.setSoundId(value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select a sound" />
@@ -99,9 +78,7 @@ export function KeyConfig() {
             id="label"
             data-testid="label-input"
             value={config?.label || ""}
-            onChange={(e) =>
-              setConfig(config ? { ...config, label: e.target.value } : null)
-            }
+            onChange={(e) => events.setLabel(e.target.value)}
             className="text-sm sm:text-base"
           />
         </div>
@@ -112,9 +89,7 @@ export function KeyConfig() {
             data-testid="color-input"
             type="color"
             value={config?.color || "#00ffff"}
-            onChange={(e) =>
-              setConfig(config ? { ...config, color: e.target.value } : null)
-            }
+            onChange={(e) => events.setColor(e.target.value)}
             className="h-10 sm:h-12"
           />
         </div>
@@ -124,12 +99,7 @@ export function KeyConfig() {
             id="hotkey"
             data-testid="hotkey-input"
             value={config?.hotkey || ""}
-            onChange={(e) => {
-              // Convert to lowercase to ensure compatibility with react-hotkeys-hook
-              const normalizedHotkey = e.target.value.toLowerCase();
-              console.log("Normalized hotkey:", normalizedHotkey);
-              setConfig(config ? { ...config, hotkey: normalizedHotkey } : null);
-            }}
+            onChange={(e) => events.setHotkey(e.target.value)}
             placeholder="e.g.: ctrl+1, shift+a"
             className="text-sm sm:text-base"
           />

@@ -27,8 +27,6 @@ const MockSoundLibrary = () => {
           url: 'https://example.com/sound.mp3',
           user_id: 'user-1',
           duration: 3.0,
-          tags: ['test'],
-          category: 'effects',
           created_at: new Date().toISOString(),
         })}
       >
@@ -119,8 +117,6 @@ const mockSounds: Sound[] = [
     url: 'https://example.com/sound1.mp3',
     user_id: 'user-1',
     duration: 5.5,
-    tags: ['test', 'audio'],
-    category: 'effects',
     created_at: '2024-01-01T00:00:00Z',
   },
   {
@@ -129,8 +125,6 @@ const mockSounds: Sound[] = [
     url: 'https://example.com/sound2.mp3',
     user_id: 'user-1',
     duration: 3.2,
-    tags: ['music'],
-    category: 'music',
     created_at: '2024-01-01T00:00:00Z',
   },
 ]

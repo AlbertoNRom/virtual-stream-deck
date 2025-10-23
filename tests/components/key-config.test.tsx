@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { KeyConfig } from '@/components/key-config'
 import { useSoundStore } from '@/lib/store'
 import type { StreamDeckKey } from '@/lib/types'
+import { fireEvent, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the store
 vi.mock('@/lib/store')
@@ -139,8 +139,6 @@ describe('KeyConfig', () => {
         url: 'https://example.com/sound.mp3',
         user_id: 'user-1',
         duration: 5.5,
-        tags: ['test'],
-        category: 'effects',
         created_at: '2024-01-01T00:00:00Z',
       },
     ]

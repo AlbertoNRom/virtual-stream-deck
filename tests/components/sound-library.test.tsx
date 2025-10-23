@@ -1,25 +1,13 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { SoundLibrary } from '@/components/sound-library'
 import { useSoundStore } from '@/lib/store'
 import type { Sound } from '@/lib/types'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-// Mock the store and hooks
+// Mock the store
 vi.mock('@/lib/store', () => ({
   useSoundStore: vi.fn(),
-}))
-vi.mock('@/lib/hooks/use-sound-upload', () => ({
-  useSoundUpload: () => ({
-    uploadSound: vi.fn(),
-    isUploading: false,
-  }),
-}))
-vi.mock('@/lib/hooks/use-remove-sound', () => ({
-  useRemoveSound: () => ({
-    removeSound: vi.fn(),
-    isRemoving: false,
-  }),
 }))
 
 const mockSound: Sound = {
@@ -28,8 +16,6 @@ const mockSound: Sound = {
   url: 'https://example.com/sound.mp3',
   user_id: 'user-1',
   duration: 5.5,
-  tags: ['test', 'audio'],
-  category: 'effects',
   created_at: '2024-01-01T00:00:00Z',
 }
 
@@ -113,7 +99,6 @@ describe('SoundLibrary', () => {
     render(<SoundLibrary />)
     
     expect(screen.getByText('Test Sound')).toBeInTheDocument()
-    // Sound cards show name but duration and category are not displayed in the current component
   })
 
   it('should handle play button click', () => {
