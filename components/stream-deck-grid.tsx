@@ -1,29 +1,28 @@
 "use client";
 
-import { useEffect } from "react";
+import { useSoundLibraryBloc } from "@/lib/bloc/soundLibraryBloc";
+import { useStreamDeckHotkeys } from "@/lib/hooks/use-hotkeys";
+import { useSoundStore } from "@/lib/store";
+import type { GridConfig, StreamDeckKey } from "@/lib/types";
+import { cn } from "@/lib/utils";
 import {
   DndContext,
-  closestCenter,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
+  closestCenter,
   useSensor,
   useSensors,
-  type DragEndEvent,
 } from "@dnd-kit/core";
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   rectSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { GridConfig, StreamDeckKey } from "@/lib/types";
-import { cn } from "@/lib/utils";
-import { useSoundStore } from "@/lib/store";
-import { useStreamDeckHotkeys } from "@/lib/hooks/use-hotkeys";
-import { createClient } from "@/utils/supabase/client";
+import { useEffect } from "react";
 import { toast } from "sonner";
-import { useSoundLibraryBloc } from "@/lib/bloc/soundLibraryBloc";
 
 interface StreamDeckGridProps {
   config: GridConfig;
@@ -85,7 +84,7 @@ function SortableItem({ id, keyData, config }: { id: string; keyData: StreamDeck
 }
 
 export function StreamDeckGrid({ config }: StreamDeckGridProps) {
-  const { streamDeckKeys, setStreamDeckKeys } = useSoundStore();
+  const { streamDeckKeys } = useSoundStore();
 
   const { loadInitialKeys, reorderKeys } = useSoundLibraryBloc();
 

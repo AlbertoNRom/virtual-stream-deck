@@ -19,7 +19,7 @@ export class SupabaseSoundRepository implements SoundRepository {
       name: data.name,
       url: data.url,
       duration: data.duration,
-      createdAt: data.created_at ? new Date(data.created_at) : new Date()
+      createdAt: new Date(data.created_at),
     });
   }
 
@@ -35,20 +35,22 @@ export class SupabaseSoundRepository implements SoundRepository {
         name: d.name,
         url: d.url,
         duration: d.duration,
-        createdAt: d.created_at ? new Date(d.created_at) : new Date()
-      }),
+        createdAt: new Date(d.created_at),
+      })
     );
   }
 
   async add(sound: Sound): Promise<void> {
-    await this.supabase.from("sounds").insert({
-      id: sound.id,
-      user_id: sound.userId,
-      name: sound.name,
-      url: sound.url,
-      duration: sound.duration,
-      created_at: sound.createdAt.toISOString()
-    });
+    const entity = sound as DomainSound;
+    const dto = {
+      id: entity.id,
+      user_id: entity.userId,
+      name: entity.name,
+      url: entity.url,
+      duration: entity.duration,
+      created_at: entity.createdAt.toISOString(),
+    };
+    await this.supabase.from("sounds").insert(dto);
   }
 
   async remove(id: SoundId, userId: UserId): Promise<void> {

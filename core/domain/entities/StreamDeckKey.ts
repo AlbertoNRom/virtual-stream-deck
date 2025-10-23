@@ -34,6 +34,8 @@ export class StreamDeckKey {
     this.icon = params.icon ?? null;
     this.hotkey = params.hotkey ?? null;
     this.createdAt = params.createdAt ?? new Date();
+
+    Object.freeze(this);
   }
 
   static create(params: {

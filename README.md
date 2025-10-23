@@ -6,7 +6,7 @@
   **Professional Sound Board & Audio Control for Streamers**
   
   [![Next.js](https://img.shields.io/badge/Next.js-15.2.4-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.2.2-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
   [![Supabase](https://img.shields.io/badge/Supabase-Database-green?style=for-the-badge&logo=supabase)](https://supabase.com/)
   [![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
 </div>
@@ -52,15 +52,15 @@
    
    Fill in your environment variables:
    ```env
-   # Supabase Configuration
-   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+NEXT_PUBLIC_SUPABASE_DB_URL=postgres_connection_string
    
-   # Google Cloud Storage (Optional)
-   GOOGLE_CLOUD_PROJECT_ID=your_gcp_project_id
-   GOOGLE_CLOUD_STORAGE_BUCKET=your_storage_bucket
-   ```
+# Google Cloud Storage (Optional)
+GOOGLE_CLOUD_PROJECT_ID=your_gcp_project_id
+GOOGLE_CLOUD_STORAGE_BUCKET=your_storage_bucket
+```
 
 4. **Run the development server**
    ```bash
@@ -94,7 +94,6 @@ create table profiles (
   full_name text,
   avatar_url text,
   website text,
-
   constraint username_length check (char_length(username) >= 3)
 );
 
@@ -103,27 +102,28 @@ create table sounds (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users on delete cascade not null,
   name text not null,
-  file_url text not null,
-  file_size bigint,
+  url text not null,
   duration real,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
--- Create stream_deck_configs table
-create table stream_deck_configs (
+-- Create stream_deck_keys table
+create table stream_deck_keys (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users on delete cascade not null,
-  grid_size jsonb not null default '{"rows": 3, "cols": 3}',
-  keys jsonb not null default '[]',
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  sound_id uuid references sounds(id) on delete cascade,
+  position int not null,
+  label text,
+  color text,
+  icon text,
+  hotkey text,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
 -- Set up Row Level Security (RLS)
 alter table profiles enable row level security;
 alter table sounds enable row level security;
-alter table stream_deck_configs enable row level security;
+alter table stream_deck_keys enable row level security;
 
 -- Create policies
 create policy "Public profiles are viewable by everyone." on profiles
@@ -147,35 +147,38 @@ create policy "Users can update own sounds." on sounds
 create policy "Users can delete own sounds." on sounds
   for delete using (auth.uid() = user_id);
 
-create policy "Users can view own configs." on stream_deck_configs
+create policy "Users can view own keys." on stream_deck_keys
   for select using (auth.uid() = user_id);
 
-create policy "Users can insert own configs." on stream_deck_configs
+create policy "Users can insert own keys." on stream_deck_keys
   for insert with check (auth.uid() = user_id);
 
-create policy "Users can update own configs." on stream_deck_configs
+create policy "Users can update own keys." on stream_deck_keys
   for update using (auth.uid() = user_id);
+
+create policy "Users can delete own keys." on stream_deck_keys
+  for delete using (auth.uid() = user_id);
 ```
 
 ### 3. Storage Setup
 
 1. Go to Storage in your Supabase dashboard
-2. Create a new bucket called `sounds`
+2. Create a new bucket called `vsd-bucket`
 3. Set the bucket to public
 4. Add the following policy:
 
 ```sql
 -- Allow users to upload sounds
 create policy "Users can upload sounds" on storage.objects
-  for insert with check (bucket_id = 'sounds' and auth.uid()::text = (storage.foldername(name))[1]);
+  for insert with check (bucket_id = 'vsd-bucket' and auth.uid()::text = (storage.foldername(name))[1]);
 
 -- Allow users to view their sounds
 create policy "Users can view own sounds" on storage.objects
-  for select using (bucket_id = 'sounds' and auth.uid()::text = (storage.foldername(name))[1]);
+  for select using (bucket_id = 'vsd-bucket' and auth.uid()::text = (storage.foldername(name))[1]);
 
 -- Allow users to delete their sounds
 create policy "Users can delete own sounds" on storage.objects
-  for delete using (bucket_id = 'sounds' and auth.uid()::text = (storage.foldername(name))[1]);
+  for delete using (bucket_id = 'vsd-bucket' and auth.uid()::text = (storage.foldername(name))[1]);
 ```
 
 ### 4. Authentication Setup
@@ -226,38 +229,79 @@ gsutil iam ch allUsers:objectViewer gs://your-virtual-stream-deck-bucket
 
 ```
 virtual-stream-deck/
-├── app/                    # Next.js 13+ app directory
-│   ├── auth/              # Authentication routes
-│   ├── dashboard/         # Main dashboard page
-│   ├── globals.css        # Global styles
-│   ├── layout.tsx         # Root layout
-│   ├── page.tsx          # Home page
-│   └── sitemap.ts        # SEO sitemap
-├── components/            # React components
-│   ├── ui/               # Reusable UI components
-│   ├── auth-button.tsx   # Authentication component
-│   ├── key-config.tsx    # Key configuration
-│   ├── sound-library.tsx # Sound management
-│   └── stream-deck-grid.tsx # Main grid component
-├── lib/                  # Utilities and hooks
-│   ├── hooks/           # Custom React hooks
-│   ├── store.ts         # Zustand state management
-│   ├── types.ts         # TypeScript definitions
-│   └── utils.ts         # Utility functions
-├── public/              # Static assets
-└── utils/               # Server utilities
-    └── supabase/        # Supabase configuration
+├── app/                    # Next.js App Router
+│   ├── auth/               # Auth routes and callback
+│   ├── dashboard/          # Main dashboard page
+│   ├── globals.css         # Global styles
+│   ├── icon.tsx            # App icon
+│   ├── layout.tsx          # Root layout
+│   ├── page.tsx            # Home page
+│   └── sitemap.ts          # SEO sitemap
+├── components/             # React components
+│   ├── ui/                 # Reusable UI components
+│   ├── auth-button.tsx     # Authentication component
+│   ├── key-config.tsx      # Key configuration
+│   ├── sound-library.tsx   # Sound management
+│   └── stream-deck-grid.tsx# Main grid component
+├── core/                   # Clean architecture core
+│   ├── domain/             # Entities and repository/storage ports
+│   ├── application/        # Use cases
+│   └── infrastructure/     # Adapters (Supabase, memory) mapping DB↔domain
+│       ├── supabase/
+│       └── memory/
+├── lib/                    # Presentation layer utilities
+│   ├── adapters/           # Domain↔UI mappers
+│   ├── bloc/               # Sound library hook/BLoC
+│   ├── hooks/              # Custom React hooks
+│   ├── services/           # UI-facing services
+│   ├── store.ts            # Zustand store
+│   ├── types.ts            # UI types
+│   └── utils.ts            # UI helper functions
+├── utils/                  # Server utilities
+│   └── supabase/           # Supabase SSR client, middleware, schema, Drizzle
+├── tests/                  # Unit, components, integration
+├── playwright/             # E2E artifacts
+├── public/                 # Static assets
+└── config files            # Tailwind, Vitest, Playwright, etc.
 ```
+
+### Architecture
+- **Domain**: Core entities and ports in `core/domain` define business rules.
+- **Application**: Use cases in `core/application` orchestrate domain operations.
+- **Infrastructure**: Adapters in `core/infrastructure/supabase|memory` implement ports.
+- **Repositories**: Supabase/memory adapters map DB rows directly to domain entities.
+- **Presentation**: UI adapters in `lib/adapters/index.ts` convert domain↔UI; hook in `lib/bloc/soundLibraryBloc.ts` manages UI state via `lib/store.ts`.
 
 ### Available Scripts
 
 ```bash
 # Development
-npm run dev          # Start development server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run type-check   # Run TypeScript checks
+npm run dev              # Start development server
+npm run build            # Build for production
+npm run start            # Start production server
+npm run lint             # Run ESLint
+
+# Unit & Component Tests (Vitest)
+npm run test             # Watch mode
+npm run test:run         # Single run
+npm run test:ui          # Visual UI
+npm run test:coverage    # Coverage report
+
+# End-to-End Tests (Playwright)
+npm run test:e2e         # Run E2E tests
+npm run test:e2e:ui      # UI mode
+npm run test:e2e:headed  # Visible browser
+
+# All tests
+npm run test:all
+
+# Database (Drizzle)
+npm run drizzle:generate
+npm run drizzle:push
+npm run drizzle:studio
+
+# Type check (no script)
+npx tsc --noEmit
 ```
 
 ### Key Technologies
@@ -266,9 +310,10 @@ npm run type-check   # Run TypeScript checks
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Database**: Supabase (PostgreSQL)
+- **ORM**: Drizzle ORM
 - **Authentication**: Supabase Auth
 - **State Management**: Zustand
-- **Audio**: Web Audio API
+- **Audio**: Howler.js
 - **Drag & Drop**: @dnd-kit
 - **File Upload**: react-dropzone
 

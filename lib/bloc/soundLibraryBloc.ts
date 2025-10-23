@@ -8,6 +8,7 @@ import { useSoundStore } from "@/lib/store";
 import type { StreamDeckKey } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
 import { useCallback, useMemo, useState } from "react";
+import { domainSoundToUi, domainStreamDeckKeyToUi } from "@/lib/adapters";
 
 export type SoundLibraryState = {
   isUploading: boolean;
@@ -89,27 +90,10 @@ export class SoundLibraryBloc {
 
       // Actualiza el store inmediatamente para feedback rápido
       const store = useSoundStore.getState();
-      const uiSound = {
-        id: result.sound.id,
-        user_id: result.sound.userId,
-        name: result.sound.name,
-        url: result.sound.url,
-        duration: result.sound.duration,
-        created_at: result.sound.createdAt.toISOString(),
-      };
+      const uiSound = domainSoundToUi(result.sound);
       store.addSound(uiSound);
 
-      const uiKey = {
-        id: result.key.id,
-        user_id: result.key.userId,
-        sound_id: result.key.soundId,
-        position: result.key.position,
-        label: result.key.label,
-        color: result.key.color,
-        icon: result.key.icon,
-        hotkey: result.key.hotkey,
-        created_at: result.key.createdAt.toISOString(),
-      };
+      const uiKey = domainStreamDeckKeyToUi(result.key);
       store.setStreamDeckKeys([...store.streamDeckKeys, uiKey]);
 
       // Refresca desde BD para asegurar estado persistido
@@ -250,27 +234,10 @@ export function useSoundLibraryBloc() {
       const result = await soundService.uploadSound.execute({ userId, file });
 
       const store = useSoundStore.getState();
-      const uiSound = {
-        id: result.sound.id,
-        user_id: result.sound.userId,
-        name: result.sound.name,
-        url: result.sound.url,
-        duration: result.sound.duration,
-        created_at: result.sound.createdAt.toISOString(),
-      };
+      const uiSound = domainSoundToUi(result.sound);
       store.addSound(uiSound);
 
-      const uiKey = {
-        id: result.key.id,
-        user_id: result.key.userId,
-        sound_id: result.key.soundId,
-        position: result.key.position,
-        label: result.key.label,
-        color: result.key.color,
-        icon: result.key.icon,
-        hotkey: result.key.hotkey,
-        created_at: result.key.createdAt.toISOString(),
-      };
+      const uiKey = domainStreamDeckKeyToUi(result.key);
       store.setStreamDeckKeys([...store.streamDeckKeys, uiKey]);
 
       await refreshSounds(userId);

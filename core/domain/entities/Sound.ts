@@ -21,9 +21,13 @@ export class Sound {
     this.userId = params.userId;
     this.name = params.name;
     this.url = params.url;
+
     if (params.duration <= 0) throw new Error("Duration must be > 0");
     this.duration = params.duration;
+
     this.createdAt = params.createdAt ?? new Date();
+
+    Object.freeze(this);
   }
 
   static create(params: {

@@ -1,12 +1,12 @@
-import { createClient } from '@/utils/supabase/server';
-import { redirect } from 'next/navigation';
+import { KeyConfig } from '@/components/key-config';
 import { SoundLibrary } from '@/components/sound-library';
 import { StreamDeckGrid } from '@/components/stream-deck-grid';
-import { KeyConfig } from '@/components/key-config';
 import { Button } from '@/components/ui/button';
+import { createClient } from '@/utils/supabase/server';
 import { LogOut } from 'lucide-react';
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Dashboard - Virtual Stream Deck',

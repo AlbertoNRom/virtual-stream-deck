@@ -11,10 +11,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { useSoundLibraryBloc } from "@/lib/bloc/soundLibraryBloc";
 import { useSoundStore } from "@/lib/store";
-import type { StreamDeckKey } from "@/lib/types";
 import { createClient } from "@/utils/supabase/client";
 import { Key, Play, Search, Square, Trash2, Upload } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
 

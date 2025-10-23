@@ -1,7 +1,8 @@
-import type { StreamDeckKeyRepository } from "../../domain/ports/StreamDeckKeyRepository";
-import { StreamDeckKey } from "../../domain/entities/StreamDeckKey";
-import type { SoundId, UserId } from "../../domain/entities/Sound";
 import { createClient } from "@/utils/supabase/client";
+import type { StreamDeckKey } from "../../domain/entities/StreamDeckKey";
+import { StreamDeckKey as DomainStreamDeckKey } from "../../domain/entities/StreamDeckKey";
+import type { StreamDeckKeyRepository } from "../../domain/ports/StreamDeckKeyRepository";
+import type { SoundId, UserId } from "../../domain/entities/Sound";
 
 export class SupabaseStreamDeckKeyRepository implements StreamDeckKeyRepository {
   private supabase = createClient();
@@ -12,34 +13,34 @@ export class SupabaseStreamDeckKeyRepository implements StreamDeckKeyRepository 
       .select("id,user_id,sound_id,position,label,color,icon,hotkey,created_at")
       .eq("user_id", userId);
     return (data ?? []).map((d) =>
-      StreamDeckKey.create({
+      DomainStreamDeckKey.create({
         id: d.id,
         userId: d.user_id,
-        soundId: d.sound_id,
+        soundId: d.sound_id ?? null,
         position: d.position,
-        label: d.label,
+        label: d.label ?? null,
         color: d.color,
-        icon: d.icon,
-        hotkey: d.hotkey,
-        createdAt: d.created_at ? new Date(d.created_at) : new Date(),
-      }),
+        icon: d.icon ?? null,
+        hotkey: d.hotkey ?? null,
+        createdAt: new Date(d.created_at),
+      })
     );
   }
 
   async add(key: StreamDeckKey): Promise<void> {
-    await this.supabase
-      .from("stream_deck_keys")
-      .insert({
-        id: key.id,
-        user_id: key.userId,
-        sound_id: key.soundId,
-        position: key.position,
-        label: key.label,
-        color: key.color,
-        icon: key.icon,
-        hotkey: key.hotkey,
-        created_at: key.createdAt.toISOString(),
-      });
+    const entity = key as DomainStreamDeckKey;
+    const dto = {
+      id: entity.id,
+      user_id: entity.userId,
+      sound_id: entity.soundId ?? null,
+      position: entity.position,
+      label: entity.label ?? null,
+      color: entity.color,
+      icon: entity.icon ?? null,
+      hotkey: entity.hotkey ?? null,
+      created_at: entity.createdAt.toISOString(),
+    };
+    await this.supabase.from("stream_deck_keys").insert(dto);
   }
 
   async removeBySoundId(userId: UserId, soundId: SoundId): Promise<void> {

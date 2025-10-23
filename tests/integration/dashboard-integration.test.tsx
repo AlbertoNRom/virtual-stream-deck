@@ -192,19 +192,21 @@ describe('Dashboard Integration Tests', () => {
         mockStoreState.sounds = mockStoreState.sounds.filter((s: Sound) => s.id !== id)
       }),
       setStreamDeckKeys: vi.fn(),
-      updateKey: vi.fn((id: string, updates: Partial<StreamDeckKey>) => {
+      updateKey: vi.fn((arg1: unknown, arg2?: Partial<StreamDeckKey>) => {
+        const id = typeof arg1 === 'string' ? (arg1 as string) : (arg1 as StreamDeckKey).id
+        const updates = typeof arg1 === 'string' ? (arg2 ?? {}) : (arg1 as Partial<StreamDeckKey>)
         const keyIndex = mockStoreState.streamDeckKeys.findIndex((k: StreamDeckKey) => k.id === id)
         if (keyIndex !== -1) {
           mockStoreState.streamDeckKeys[keyIndex] = {
             ...mockStoreState.streamDeckKeys[keyIndex],
-            ...updates
-          }
+            ...updates,
+          } as StreamDeckKey
         }
         if (mockStoreState.selectedKey?.id === id) {
           mockStoreState.selectedKey = {
             ...mockStoreState.selectedKey,
-            ...updates
-          }
+            ...updates,
+          } as StreamDeckKey
         }
       }),
       setSelectedKey: vi.fn((key: StreamDeckKey | null) => {
@@ -250,6 +252,14 @@ describe('Dashboard Integration Tests', () => {
     expect(mockStoreState.setSelectedKey).toHaveBeenCalledWith(mockStreamDeckKeys[0])
   })
   
+  it('should not select a key when clicking an empty cell', async () => {
+    render(<MockDashboard />)
+    vi.clearAllMocks()
+    const emptyCell = screen.getByTestId('key-5')
+    await user.click(emptyCell)
+    expect(mockStoreState.setSelectedKey).not.toHaveBeenCalled()
+  })
+  
   it('should show key configuration when key is selected', () => {
     mockStoreState.selectedKey = mockStreamDeckKeys[0]
     vi.mocked(useSoundStore).mockReturnValue(mockStoreState)
@@ -261,38 +271,77 @@ describe('Dashboard Integration Tests', () => {
     expect(screen.getByTestId('color-input')).toHaveValue('#ff5733')
   })
   
-  it('should update key label when input changes', async () => {
+  it('should update grid label after editing key label', async () => {
+    const { rerender } = render(<MockDashboard />)
+    // select first key
+    const keyButton = screen.getByTestId('key-0')
+    await user.click(keyButton)
+    expect(mockStoreState.setSelectedKey).toHaveBeenCalledWith(mockStreamDeckKeys[0])
+    
+    // reflect selection in mock and re-render
     mockStoreState.selectedKey = mockStreamDeckKeys[0]
     vi.mocked(useSoundStore).mockReturnValue(mockStoreState)
-    
-    render(<MockDashboard />)
+    rerender(<MockDashboard />)
     
     const labelInput = screen.getByTestId('label-input')
     await user.clear(labelInput)
-    await user.type(labelInput, 'New Label')
-    
+    await user.type(labelInput, 'Updated Label')
     expect(mockStoreState.updateKey).toHaveBeenCalled()
+    
+    // simulate the key being updated in the store
+    const updatedKeys = [...mockStreamDeckKeys]
+    updatedKeys[0] = { ...updatedKeys[0], label: 'Updated Label' }
+    mockStoreState.streamDeckKeys = updatedKeys
+    vi.mocked(useSoundStore).mockReturnValue(mockStoreState)
+    rerender(<MockDashboard />)
+    
+    expect(screen.getByTestId('key-0')).toHaveTextContent('Updated Label')
   })
   
   it('should update key color when color input changes', async () => {
     mockStoreState.selectedKey = mockStreamDeckKeys[0]
     vi.mocked(useSoundStore).mockReturnValue(mockStoreState)
-    
-    render(<MockDashboard />)
+    const { rerender } = render(<MockDashboard />)
     
     const colorInput = screen.getByTestId('color-input')
     fireEvent.change(colorInput, { target: { value: '#00FF00' } })
-    
     expect(mockStoreState.updateKey).toHaveBeenCalled()
+    
+    // simulate the key being updated in the store
+    const updatedKeys = [...mockStreamDeckKeys]
+    updatedKeys[0] = { ...updatedKeys[0], color: '#00FF00' }
+    mockStoreState.streamDeckKeys = updatedKeys
+    vi.mocked(useSoundStore).mockReturnValue(mockStoreState)
+    rerender(<MockDashboard />)
+    
+    const keyEl = screen.getByTestId('key-0')
+    expect(keyEl).toBeInTheDocument()
+    // check for RGB format since browsers convert hex to rgb
+    expect(keyEl.getAttribute('style') ?? '').toMatch(/rgb\(0,\s*255,\s*0\)/)
   })
   
-  it('should add new sound to library', async () => {
-    render(<MockDashboard />)
+  it('should increase sound count after adding a sound', async () => {
+    const { rerender } = render(<MockDashboard />)
+    expect(screen.getByTestId('sound-count')).toHaveTextContent('2 sounds')
     
     const addButton = screen.getByText('Add Sound')
     await user.click(addButton)
-    
     expect(mockStoreState.addSound).toHaveBeenCalled()
+    
+    // simulate a new sound being added to the store
+    const newSound: Sound = {
+      id: 'sound-3',
+      name: 'New Sound',
+      url: 'https://example.com/sound3.mp3',
+      user_id: 'user-1',
+      duration: 2.1,
+      created_at: '2024-01-01T00:00:00Z',
+    }
+    mockStoreState.sounds = [...mockSounds, newSound]
+    vi.mocked(useSoundStore).mockReturnValue(mockStoreState)
+    rerender(<MockDashboard />)
+    
+    expect(screen.getByTestId('sound-count')).toHaveTextContent('3 sounds')
   })
   
   it('should remove sound from library', async () => {
@@ -322,43 +371,6 @@ describe('Dashboard Integration Tests', () => {
     const closeButton = screen.getByText('Close')
     await user.click(closeButton)
     
-    expect(mockStoreState.setSelectedKey).toHaveBeenCalledWith(null)
-  })
-  
-  it('should handle workflow: select key, modify it, and close', async () => {
-    render(<MockDashboard />)
-    
-    // Step 1: Select a key
-    const keyButton = screen.getByTestId('key-0')
-    await user.click(keyButton)
-    expect(mockStoreState.setSelectedKey).toHaveBeenCalledWith(mockStreamDeckKeys[0])
-    
-    // Step 2: Update the mock to reflect selected key
-    mockStoreState.selectedKey = mockStreamDeckKeys[0]
-    vi.mocked(useSoundStore).mockReturnValue(mockStoreState)
-    
-    // Re-render with updated state
-    render(<MockDashboard />)
-    
-    // Step 3: Modify the key
-    const labelInput = screen.getByTestId('label-input')
-    // Just verify that the input exists and can be interacted with
-    expect(labelInput).toBeInTheDocument()
-    expect(labelInput).toHaveValue('Sound 1')
-    
-    // Try to type in the input
-    await user.clear(labelInput)
-    await user.type(labelInput, 'New Label')
-    
-    // The test should pass if the input interaction works
-    // Note: The actual updateKey call happens on save button click
-    
-    // Step 4: Close configuration
-    const closeButton = screen.getByText('Close')
-    await user.click(closeButton)
-    
-    // Just verify that updateKey was called (implementation details may vary)
-    expect(mockStoreState.updateKey).toHaveBeenCalled()
     expect(mockStoreState.setSelectedKey).toHaveBeenCalledWith(null)
   })
   

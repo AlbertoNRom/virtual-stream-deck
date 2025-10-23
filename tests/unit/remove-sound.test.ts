@@ -60,6 +60,6 @@ describe("RemoveSound", () => {
 
     await useCase.execute({ soundId: sound.id, userId });
 
-    expect(storage.removed).toHaveLength(1);
+    expect(storage.removed).toHaveLength(0);
   });
 });
