@@ -2,21 +2,23 @@
 
 import { create } from "zustand";
 import { Howl } from "howler";
-import type { Sound, StreamDeckKey, GridConfig } from "./types";
+import type { SoundRow, StreamDeckKeyRow } from "@/db/supabase/schema";
+
+type GridConfig = { rows: number; columns: number };
 
 interface SoundStore {
-  sounds: Sound[];
-  streamDeckKeys: StreamDeckKey[];
-  selectedKey: StreamDeckKey | null;
+  sounds: SoundRow[];
+  streamDeckKeys: StreamDeckKeyRow[];
+  selectedKey: StreamDeckKeyRow | null;
   gridConfig: GridConfig;
   audioInstances: Map<string, Howl>;
   currentlyPlayingId: string | null;
-  setSounds: (sounds: Sound[]) => void;
-  addSound: (sound: Sound) => void;
+  setSounds: (sounds: SoundRow[]) => void;
+  addSound: (sound: SoundRow) => void;
   removeSound: (id: string) => void;
-  setStreamDeckKeys: (keys: StreamDeckKey[]) => void;
-  updateKey: (key: StreamDeckKey) => void;
-  setSelectedKey: (key: StreamDeckKey | null) => void;
+  setStreamDeckKeys: (keys: StreamDeckKeyRow[]) => void;
+  updateKey: (key: StreamDeckKeyRow) => void;
+  setSelectedKey: (key: StreamDeckKeyRow | null) => void;
   setGridConfig: (config: GridConfig) => void;
   playSound: (soundId: string) => void;
   stopSound: (soundId: string) => void;

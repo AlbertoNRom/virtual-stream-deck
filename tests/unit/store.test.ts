@@ -1,18 +1,18 @@
-import type { Sound, StreamDeckKey } from '@/shared/types'
+import type { SoundRow, StreamDeckKeyRow } from '@/db/supabase/schema'
 import { useSoundStore } from '@/shared/store'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 // Mock data
-const mockSound: Sound = {
+const mockSound: SoundRow = {
   id: 'sound-1',
   name: 'Test Sound',
   url: 'https://example.com/sound.mp3',
   user_id: 'user-1',
   duration: 5.5,
-  created_at: '2024-01-01T00:00:00Z',
+  created_at: new Date('2024-01-01T00:00:00Z'),
 }
 
-const mockStreamDeckKey: StreamDeckKey = {
+const mockStreamDeckKey: StreamDeckKeyRow = {
   id: 'key-1',
   user_id: 'user-1',
   sound_id: 'sound-1',
@@ -21,7 +21,7 @@ const mockStreamDeckKey: StreamDeckKey = {
   color: '#FF5733',
   icon: null,
   hotkey: null,
-  created_at: '2024-01-01T00:00:00Z',
+  created_at: new Date('2024-01-01T00:00:00Z'),
 }
 
 describe('Sound Store', () => {

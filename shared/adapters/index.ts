@@ -1,19 +1,19 @@
 import type { Sound } from "@/features/sounds/domain/entities/Sound";
 import type { StreamDeckKey } from "@/features/streamdeck/domain/entities/StreamDeckKey";
-import type { Sound as UISound, StreamDeckKey as UIStreamDeckKey } from "@/shared/types";
+import type { SoundRow, StreamDeckKeyRow } from "@/db/supabase/schema";
 
-export function soundToUi(sound: Sound): UISound {
+export function soundToUi(sound: Sound): SoundRow {
   return {
     id: sound.id,
     user_id: sound.userId,
     name: sound.name,
     url: sound.url,
     duration: sound.duration,
-    created_at: sound.createdAt.toISOString(),
+    created_at: sound.createdAt,
   };
 }
 
-export function streamDeckKeyToUi(key: StreamDeckKey): UIStreamDeckKey {
+export function streamDeckKeyToUi(key: StreamDeckKey): StreamDeckKeyRow {
   return {
     id: key.id,
     user_id: key.userId,
@@ -23,6 +23,6 @@ export function streamDeckKeyToUi(key: StreamDeckKey): UIStreamDeckKey {
     color: key.color,
     icon: key.icon ?? null,
     hotkey: key.hotkey ?? null,
-    created_at: key.createdAt.toISOString(),
+    created_at: key.createdAt,
   };
 }

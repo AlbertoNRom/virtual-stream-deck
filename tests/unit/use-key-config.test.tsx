@@ -24,11 +24,11 @@ describe('useKeyConfig', () => {
     color: '#00ffff',
     icon: null,
     hotkey: null,
-    created_at: new Date().toISOString(),
+    created_at: new Date(),
   }
 
   const sounds = [
-    { id: 'sound-1', user_id: 'user-1', name: 'Sound 1', url: 'http://x', duration: 2, created_at: new Date().toISOString() },
+    { id: 'sound-1', user_id: 'user-1', name: 'Sound 1', url: 'http://x', duration: 2, created_at: new Date() },
   ]
 
   it('updates label and hotkey in config and persists on save', async () => {

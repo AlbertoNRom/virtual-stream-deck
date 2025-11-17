@@ -1,5 +1,5 @@
 import { KeyConfig } from '@/features/streamdeck/ui/components/KeyConfig'
-import type { StreamDeckKey } from '@/shared/types'
+import type { StreamDeckKeyRow } from '@/db/supabase/schema'
 import { useSoundStore } from '@/shared/store'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 // Mock the store
 vi.mock('@/shared/store')
 
-const mockStreamDeckKey: StreamDeckKey = {
+const mockStreamDeckKey: StreamDeckKeyRow = {
   id: 'key-1',
   user_id: 'user-1',
   sound_id: 'sound-1',
@@ -17,7 +17,7 @@ const mockStreamDeckKey: StreamDeckKey = {
   color: '#FF5733',
   icon: null,
   hotkey: 'ctrl+1',
-  created_at: '2024-01-01T00:00:00Z',
+  created_at: new Date('2024-01-01T00:00:00Z'),
 }
 
 const mockStoreState = {
@@ -139,7 +139,7 @@ describe('KeyConfig', () => {
         url: 'https://example.com/sound.mp3',
         user_id: 'user-1',
         duration: 5.5,
-        created_at: '2024-01-01T00:00:00Z',
+        created_at: new Date('2024-01-01T00:00:00Z'),
       },
     ]
     

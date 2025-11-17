@@ -5,7 +5,7 @@ import { SupabaseSoundRepository } from "@/features/sounds/infra/supabase/Supaba
 import { SupabaseSoundStorage } from "@/features/sounds/infra/supabase/SupabaseSoundStorage";
 import { EnsureStreamDeckKeyForSound } from "@/features/streamdeck/application/EnsureStreamDeckKeyForSound";
 import { SupabaseStreamDeckKeyRepository } from "@/features/streamdeck/infra/supabase/SupabaseStreamDeckKeyRepository";
-import type { StreamDeckKey } from "@/shared/types";
+import type { StreamDeckKeyRow } from "@/db/supabase/schema";
 import { soundToUi, streamDeckKeyToUi } from "@/shared/adapters";
 import { useSoundStore } from "@/shared/store";
 import { useCallback, useMemo, useState } from "react";
@@ -97,7 +97,7 @@ export function useSoundLibrary() {
     }
   }, [supabase, soundService, refreshKeys, refreshSounds]);
 
-  const reorderKeys = useCallback(async (updatedKeys: StreamDeckKey[]) => {
+  const reorderKeys = useCallback(async (updatedKeys: StreamDeckKeyRow[]) => {
     const { error } = await supabase
       .from("stream_deck_keys")
       .upsert(updatedKeys);
@@ -106,7 +106,7 @@ export function useSoundLibrary() {
     setStreamDeckKeys(updatedKeys);
   }, [supabase]);
 
-  const updateKey = useCallback(async (updatedKey: StreamDeckKey) => {
+  const updateKey = useCallback(async (updatedKey: StreamDeckKeyRow) => {
     const { error } = await supabase
       .from("stream_deck_keys")
       .update(updatedKey)
@@ -114,12 +114,12 @@ export function useSoundLibrary() {
     if (error) throw error;
 
     const store = (useSoundStore.getState?.() ?? useSoundStore()) as {
-      updateKey?: (k: StreamDeckKey) => void;
+      updateKey?: (k: StreamDeckKeyRow) => void;
     };
     store.updateKey?.(updatedKey);
   }, [supabase]);
 
-  const ensureKeyForSound = useCallback(async (soundId: string): Promise<StreamDeckKey | null> => {
+  const ensureKeyForSound = useCallback(async (soundId: string): Promise<StreamDeckKeyRow | null> => {
     const { sounds } = useSoundStore.getState();
     const sound = sounds.find((s) => s.id === soundId);
     let userId = sound?.user_id ?? null;

@@ -1,5 +1,5 @@
 import { StreamDeckGrid } from '@/features/streamdeck/ui/components/StreamDeckGrid'
-import type { StreamDeckKey } from '@/shared/types'
+import type { StreamDeckKeyRow } from '@/db/supabase/schema'
 import { useSoundStore } from '@/shared/store'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -10,7 +10,7 @@ vi.mock('@/shared/hooks/useHotkeys', () => ({
   useStreamDeckHotkeys: vi.fn(),
 }))
 
-const mockStreamDeckKey: StreamDeckKey = {
+const mockStreamDeckKey: StreamDeckKeyRow = {
   id: 'key-1',
   user_id: 'user-1',
   sound_id: 'sound-1',
@@ -19,7 +19,7 @@ const mockStreamDeckKey: StreamDeckKey = {
   color: '#FF5733',
   icon: null,
   hotkey: null,
-  created_at: '2024-01-01T00:00:00Z',
+  created_at: new Date('2024-01-01T00:00:00Z'),
 }
 
 const mockStoreState = {

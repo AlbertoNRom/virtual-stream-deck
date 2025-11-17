@@ -1,9 +1,9 @@
 "use client";
 
+import type { StreamDeckKeyRow } from "@/db/supabase/schema";
 import { useSoundLibrary } from "@/features/sounds/ui/hooks/useSoundLibrary";
 import { useStreamDeckHotkeys } from "@/features/streamdeck/ui/hooks/useHotkeys";
 import { useSoundStore } from "@/shared/store";
-import type { GridConfig, StreamDeckKey } from "@/shared/types";
 import { cn } from "@/shared/utils";
 import {
   DndContext,
@@ -24,11 +24,12 @@ import { CSS } from "@dnd-kit/utilities";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
+type GridConfig = { rows: number; columns: number };
 interface StreamDeckGridProps {
   config: GridConfig;
 }
 
-function SortableItem({ id, keyData}: { id: string; keyData: StreamDeckKey; config: GridConfig }) {
+function SortableItem({ id, keyData}: { id: string; keyData: StreamDeckKeyRow }) {
   const {
     attributes,
     listeners,
@@ -87,7 +88,7 @@ function SortableItem({ id, keyData}: { id: string; keyData: StreamDeckKey; conf
   );
 }
 
-export function StreamDeckGrid({ config }: StreamDeckGridProps) {
+export const StreamDeckGrid = ({ config }: StreamDeckGridProps) => {
   const { streamDeckKeys } = useSoundStore();
 
   const { loadInitialKeys, reorderKeys } = useSoundLibrary();
@@ -170,7 +171,6 @@ export function StreamDeckGrid({ config }: StreamDeckGridProps) {
               key={`key-${item.position}`}
               id={`key-${item.position}`}
               keyData={item}
-              config={config}
             />
           ))}
         </div>

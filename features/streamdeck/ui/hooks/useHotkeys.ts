@@ -1,7 +1,7 @@
 "use client";
 
 import { useSoundStore } from "@/shared/store";
-import type { StreamDeckKey } from "@/shared/types";
+import type { StreamDeckKeyRow } from "@/db/supabase/schema";
 import { useCallback, useMemo, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
@@ -24,7 +24,7 @@ export const useStreamDeckHotkeys = () => {
   const validHotkeys = useMemo(() => {
     // Filter valid hotkeys (those with hotkey and sound_id)
     const validKeys = streamDeckKeys.filter(
-      (key): key is StreamDeckKey & { hotkey: string; sound_id: string } => 
+      (key): key is StreamDeckKeyRow & { hotkey: string; sound_id: string } => 
         Boolean(key.hotkey && key.sound_id)
     );
     

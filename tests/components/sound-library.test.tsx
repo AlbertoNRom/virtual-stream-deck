@@ -1,5 +1,5 @@
 import { SoundLibrary } from '@/features/sounds/ui/components/SoundLibrary'
-import type { Sound } from '@/shared/types'
+import type { SoundRow } from '@/db/supabase/schema'
 import { useSoundStore } from '@/shared/store'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -10,13 +10,13 @@ vi.mock('@/shared/store', () => ({
   useSoundStore: vi.fn(),
 }))
 
-const mockSound: Sound = {
+const mockSound: SoundRow = {
   id: 'sound-1',
   name: 'Test Sound',
   url: 'https://example.com/sound.mp3',
   user_id: 'user-1',
   duration: 5.5,
-  created_at: '2024-01-01T00:00:00Z',
+  created_at: new Date('2024-01-01T00:00:00Z'),
 }
 
 const mockStoreState = {

@@ -1,10 +1,10 @@
 import { useSoundLibrary } from "@/features/sounds/ui/hooks/useSoundLibrary";
-import type { Sound, StreamDeckKey } from "@/shared/types";
+import type { SoundRow, StreamDeckKeyRow } from "@/db/supabase/schema";
 import { useCallback, useEffect, useState } from "react";
 
 export interface KeyConfigState {
-  config: StreamDeckKey | null;
-  sounds: Sound[];
+  config: StreamDeckKeyRow | null;
+  sounds: SoundRow[];
 }
 
 export interface KeyConfigEvents {
@@ -16,11 +16,11 @@ export interface KeyConfigEvents {
 }
 
 export const useKeyConfig = (
-  selectedKey: StreamDeckKey | null,
-  sounds: Sound[],
-  deps: { updateKey: (k: StreamDeckKey) => void }
+  selectedKey: StreamDeckKeyRow | null,
+  sounds: SoundRow[],
+  deps: { updateKey: (k: StreamDeckKeyRow) => void }
 ): [KeyConfigState, KeyConfigEvents] => {
-  const [config, setConfig] = useState<StreamDeckKey | null>(selectedKey);
+  const [config, setConfig] = useState<StreamDeckKeyRow | null>(selectedKey);
 
   useEffect(() => {
     setConfig(selectedKey);

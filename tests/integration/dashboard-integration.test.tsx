@@ -1,5 +1,5 @@
+import type { SoundRow, StreamDeckKeyRow } from '@/db/supabase/schema'
 import { useSoundStore } from '@/shared/store'
-import type { Sound, StreamDeckKey } from '@/shared/types'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -27,7 +27,7 @@ const MockSoundLibrary = () => {
           url: 'https://example.com/sound.mp3',
           user_id: 'user-1',
           duration: 3.0,
-          created_at: new Date().toISOString(),
+          created_at: new Date(),
         })}
       >
         Add Sound
@@ -111,14 +111,14 @@ const MockDashboard = () => {
 // Mock the store
 vi.mock('@/shared/store')
 
-const mockSounds: Sound[] = [
+const mockSounds: SoundRow[] = [
   {
     id: 'sound-1',
     name: 'Test Sound 1',
     url: 'https://example.com/sound1.mp3',
     user_id: 'user-1',
     duration: 5.5,
-    created_at: '2024-01-01T00:00:00Z',
+    created_at: new Date('2024-01-01T00:00:00Z'),
   },
   {
     id: 'sound-2',
@@ -126,11 +126,11 @@ const mockSounds: Sound[] = [
     url: 'https://example.com/sound2.mp3',
     user_id: 'user-1',
     duration: 3.2,
-    created_at: '2024-01-01T00:00:00Z',
+    created_at: new Date('2024-01-01T00:00:00Z'),
   },
 ]
 
-const mockStreamDeckKeys: StreamDeckKey[] = [
+const mockStreamDeckKeys: StreamDeckKeyRow[] = [
   {
     id: 'key-1',
     user_id: 'user-1',
@@ -140,7 +140,7 @@ const mockStreamDeckKeys: StreamDeckKey[] = [
     color: '#FF5733',
     icon: null,
     hotkey: 'ctrl+1',
-    created_at: '2024-01-01T00:00:00Z',
+    created_at: new Date('2024-01-01T00:00:00Z'),
   },
   {
     id: 'key-2',
@@ -151,7 +151,7 @@ const mockStreamDeckKeys: StreamDeckKey[] = [
     color: '#333333',
     icon: null,
     hotkey: null,
-    created_at: '2024-01-01T00:00:00Z',
+    created_at: new Date('2024-01-01T00:00:00Z'),
   },
 ]
 
@@ -159,18 +159,18 @@ describe('Dashboard Integration Tests', () => {
   const user = userEvent.setup()
   
   let mockStoreState: {
-    sounds: Sound[];
-    streamDeckKeys: StreamDeckKey[];
-    selectedKey: StreamDeckKey | null;
+    sounds: SoundRow[];
+    streamDeckKeys: StreamDeckKeyRow[];
+    selectedKey: StreamDeckKeyRow | null;
     gridConfig: { rows: number; columns: number };
     audioInstances: Map<string, unknown>;
     currentlyPlayingId: string | null;
-    setSounds: (sounds: Sound[]) => void;
-    addSound: (sound: Sound) => void;
+    setSounds: (sounds: SoundRow[]) => void;
+    addSound: (sound: SoundRow) => void;
     removeSound: (id: string) => void;
-    setStreamDeckKeys: (keys: StreamDeckKey[]) => void;
-    updateKey: (id: string, updates: Partial<StreamDeckKey>) => void;
-    setSelectedKey: (key: StreamDeckKey | null) => void;
+    setStreamDeckKeys: (keys: StreamDeckKeyRow[]) => void;
+    updateKey: (key: StreamDeckKeyRow) => void;
+    setSelectedKey: (key: StreamDeckKeyRow | null) => void;
     setGridConfig: (config: { rows: number; columns: number }) => void;
     playSound: (id: string) => void;
     stopSound: (id: string) => void;
@@ -190,27 +190,25 @@ describe('Dashboard Integration Tests', () => {
         mockStoreState.sounds = [...mockStoreState.sounds, sound]
       }),
       removeSound: vi.fn((id) => {
-        mockStoreState.sounds = mockStoreState.sounds.filter((s: Sound) => s.id !== id)
+        mockStoreState.sounds = mockStoreState.sounds.filter((s: SoundRow) => s.id !== id)
       }),
       setStreamDeckKeys: vi.fn(),
-      updateKey: vi.fn((arg1: unknown, arg2?: Partial<StreamDeckKey>) => {
-        const id = typeof arg1 === 'string' ? (arg1 as string) : (arg1 as StreamDeckKey).id
-        const updates = typeof arg1 === 'string' ? (arg2 ?? {}) : (arg1 as Partial<StreamDeckKey>)
-        const keyIndex = mockStoreState.streamDeckKeys.findIndex((k: StreamDeckKey) => k.id === id)
+      updateKey: vi.fn((key: StreamDeckKeyRow) => {
+        const keyIndex = mockStoreState.streamDeckKeys.findIndex((k: StreamDeckKeyRow) => k.id === key.id)
         if (keyIndex !== -1) {
           mockStoreState.streamDeckKeys[keyIndex] = {
             ...mockStoreState.streamDeckKeys[keyIndex],
-            ...updates,
-          } as StreamDeckKey
+            ...key,
+          } as StreamDeckKeyRow
         }
-        if (mockStoreState.selectedKey?.id === id) {
+        if (mockStoreState.selectedKey?.id === key.id) {
           mockStoreState.selectedKey = {
             ...mockStoreState.selectedKey,
-            ...updates,
-          } as StreamDeckKey
+            ...key,
+          } as StreamDeckKeyRow
         }
       }),
-      setSelectedKey: vi.fn((key: StreamDeckKey | null) => {
+      setSelectedKey: vi.fn((key: StreamDeckKeyRow | null) => {
         mockStoreState.selectedKey = key
       }),
       setGridConfig: vi.fn(),
@@ -330,13 +328,13 @@ describe('Dashboard Integration Tests', () => {
     expect(mockStoreState.addSound).toHaveBeenCalled()
     
     // simulate a new sound being added to the store
-    const newSound: Sound = {
+    const newSound: SoundRow = {
       id: 'sound-3',
       name: 'New Sound',
       url: 'https://example.com/sound3.mp3',
       user_id: 'user-1',
       duration: 2.1,
-      created_at: '2024-01-01T00:00:00Z',
+      created_at: new Date('2024-01-01T00:00:00Z'),
     }
     mockStoreState.sounds = [...mockSounds, newSound]
     vi.mocked(useSoundStore).mockReturnValue(mockStoreState)
