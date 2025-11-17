@@ -134,7 +134,28 @@ create policy "Users can delete own sounds" on storage.objects
   for delete using (bucket_id = 'vsd-bucket' and auth.uid()::text = (storage.foldername(name))[1]);
 ```
 
-### 4. Authentication Setup
+### 4. Initial Sound Setup
+
+The project includes an API endpoint to automatically set up example sounds for new users:
+
+1. **Example Sounds**: The project includes 3 sample audio files in the `sound-examples/` folder:
+   - Glass Break
+   - Cinematic Hit 3
+   - Police Siren
+
+2. **API Endpoint**: Use the `/api/initial-sounds` endpoint to set up these sounds:
+   ```bash
+   curl -X POST http://localhost:3000/api/initial-sounds \
+     -H "Content-Type: application/json" \
+     -d '{"userId": "your-user-uuid"}'
+   ```
+
+3. **Features**:
+   - Checks if files already exist in storage before uploading
+   - Creates corresponding database entries for sounds and stream deck keys
+   - Prevents duplicate uploads and configurations
+
+### 5. Authentication Setup
 
 1. Go to Authentication > Settings
 2. Configure your site URL: `http://localhost:3000` (development) or your production URL
@@ -167,41 +188,71 @@ create policy "Users can delete own sounds" on storage.objects
 
 ## 🛠️ Development
 
+### Recent Updates
+
+- **Initial Sound Setup**: Added automated API endpoint for setting up example sounds for new users
+- **File System Integration**: Server-side file operations for uploading sample audio files
+- **Duplicate Prevention**: Intelligent checks to prevent re-uploading existing files
+- **Storage Optimization**: Efficient file existence checking before upload operations
+
 ### Project Structure
 
 ```
 virtual-stream-deck/
 ├── app/                    # Next.js App Router (server components)
-│   ├── auth/               # Rutas de auth y callback
-│   ├── dashboard/          # Página principal del panel
+│   ├── auth/               # Auth routes and callback
+│   ├── dashboard/          # Main dashboard page
 │   ├── global-error.tsx    # Error boundary
-│   ├── globals.css         # Estilos globales
-│   ├── icon.tsx            # Icono de la app
-│   ├── layout.tsx          # Layout raíz
+│   ├── globals.css         # Global styles
+│   ├── icon.tsx            # App icon
+│   ├── layout.tsx          # Root layout
 │   ├── page.tsx            # Home
-│   └── sitemap.ts          # Sitemap SEO
-├── components/             # Componentes UI (cliente)
-│   ├── ui/                 # Primitivas shadcn/ui
+│   └── sitemap.ts          # SEO sitemap
+├── components/             # UI components (client)
+│   ├── ui/                 # shadcn/ui primitives
 │   ├── auth-button.tsx
 │   ├── key-config.tsx
 │   ├── sound-library.tsx
 │   ├── stream-deck-grid.tsx
 │   └── theme-provider.tsx
-├── core/                   # Núcleo Clean Architecture
-│   ├── domain/             # Entidades y puertos (interfaces)
-│   ├── application/        # Casos de uso
-│   └── infrastructure/     # Adaptadores (Supabase, memoria)
-├── lib/                    # Capa de presentación
-│   ├── adapters/           # Mappers Domain↔UI
+├── core/                   # Clean Architecture core
+│   ├── domain/             # Entities and ports (interfaces)
+│   ├── application/        # Use cases
+│   └── infrastructure/     # Adapters (Supabase, memory)
+├── lib/                    # Presentation layer
+│   ├── adapters/           # Domain↔UI mappers
 │   ├── hooks/              # useSoundLibrary, useKeyConfig, useHotkeys
 │   ├── services/           # soundService
 │   ├── store.ts            # Zustand store
-│   ├── types.ts            # Tipos UI
-│   └── utils.ts            # Utilidades UI
-├── utils/
-│   └── supabase/           # Cliente, server, schema, migrations
+│   ├── types.ts            # UI types
+│   └── utils.ts            # UI utilities
+├── pages/                  # API Routes (Pages Router)
+│   └── api/
+│       └── initial-sounds.ts # Setup example sounds endpoint
+├── db/supabase/            # Supabase configuration
+│   ├── client.ts
+│   ├── connection.ts
+│   ├── middleware.ts
+│   ├── migrations/
+│   ├── schema.ts           # Database schema (Drizzle ORM)
+│   └── server.ts
+├── features/               # Feature-based organization
+│   ├── sounds/             # Sound feature modules
+│   └── streamdeck/         # Stream deck feature modules
+├── shared/                 # Shared utilities
+│   ├── adapters/
+│   ├── hooks/
+│   ├── services/
+│   ├── store.ts
+│   ├── types.ts
+│   └── utils.ts
+├── sound-examples/         # Sample audio files
+│   ├── cinematic-hit-3.mp3
+│   ├── glass-break.mp3
+│   ├── police-sirens.mp3
+│   └── thunder.mp4
 ├── tests/                  # Unit, components, integration
-├── public/                 # Assets estáticos
+├── public/                 # Static assets
 └── config files            # Tailwind, Vitest, Playwright, Biome, Drizzle
 ```
 
@@ -260,6 +311,7 @@ npx tsc --noEmit
 - **Audio**: Howler.js
 - **Drag & Drop**: @dnd-kit
 - **File Upload**: react-dropzone
+- **File System**: Node.js fs for server-side operations
 
 ## 🎯 Usage
 
