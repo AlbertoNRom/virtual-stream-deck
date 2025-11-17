@@ -1,45 +1,45 @@
-import { UploadSound } from "@/features/sounds/application/UploadSound";
-import { InMemorySoundRepository } from "@/features/sounds/infra/memory/InMemorySoundRepository";
-import { InMemoryStreamDeckKeyRepository } from "@/features/streamdeck/infra/memory/InMemoryStreamDeckKeyRepository";
-import { describe, expect, it } from "vitest";
+import { UploadSound } from '@/features/sounds/application/UploadSound';
+import { InMemorySoundRepository } from '@/features/sounds/infra/memory/InMemorySoundRepository';
+import { InMemoryStreamDeckKeyRepository } from '@/features/streamdeck/infra/memory/InMemoryStreamDeckKeyRepository';
+import { describe, expect, it } from 'vitest';
 
-describe("UploadSound", () => {
-  it("persiste un sonido válido en el repositorio", async () => {
-    const repo = new InMemorySoundRepository();
-    const keys = new InMemoryStreamDeckKeyRepository();
-    const useCase = new UploadSound(repo, keys);
+describe('UploadSound', () => {
+	it('persiste un sonido válido en el repositorio', async () => {
+		const repo = new InMemorySoundRepository();
+		const keys = new InMemoryStreamDeckKeyRepository();
+		const useCase = new UploadSound(repo, keys);
 
-    const params = {
-      id: "s-100",
-      userId: "user-100",
-      name: "nombre",
-      url: "https://example.com/public/vsd-bucket/user-100/nombre.mp3",
-      duration: 2.5,
-    };
+		const params = {
+			id: 's-100',
+			userId: 'user-100',
+			name: 'nombre',
+			url: 'https://example.com/public/vsd-bucket/user-100/nombre.mp3',
+			duration: 2.5,
+		};
 
-    await useCase.execute(params);
+		await useCase.execute(params);
 
-    const found = await repo.findById(params.id);
-    expect(found).not.toBeNull();
-    expect(found?.id).toBe(params.id);
-    expect(found?.userId).toBe(params.userId);
-    expect(found?.name).toBe(params.name);
-    expect(found?.url).toBe(params.url);
-    expect(found?.duration).toBe(params.duration);
-  });
+		const found = await repo.findById(params.id);
+		expect(found).not.toBeNull();
+		expect(found?.id).toBe(params.id);
+		expect(found?.userId).toBe(params.userId);
+		expect(found?.name).toBe(params.name);
+		expect(found?.url).toBe(params.url);
+		expect(found?.duration).toBe(params.duration);
+	});
 
-  it("valida duración no negativa", async () => {
-    const repo = new InMemorySoundRepository();
-    const keys = new InMemoryStreamDeckKeyRepository();
-    const useCase = new UploadSound(repo, keys);
-    await expect(
-      useCase.execute({
-        id: "s-err",
-        userId: "user-err",
-        name: "err",
-        url: "https://example.com/public/vsd-bucket/user-err/err.mp3",
-        duration: -1,
-      }),
-    ).rejects.toThrow();
-  });
+	it('valida duración no negativa', async () => {
+		const repo = new InMemorySoundRepository();
+		const keys = new InMemoryStreamDeckKeyRepository();
+		const useCase = new UploadSound(repo, keys);
+		await expect(
+			useCase.execute({
+				id: 's-err',
+				userId: 'user-err',
+				name: 'err',
+				url: 'https://example.com/public/vsd-bucket/user-err/err.mp3',
+				duration: -1,
+			}),
+		).rejects.toThrow();
+	});
 });

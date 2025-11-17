@@ -1,17 +1,17 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { createClient } from '@/db/supabase/client';
+import { useSoundLibrary } from '@/features/sounds/ui/hooks/useSoundLibrary';
+import { useSoundStore } from '@/shared/store';
+import { Button } from '@/shared/ui/components/shadcn/button';
 import {
 	Card,
 	CardContent,
 	CardDescription,
 	CardHeader,
 	CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { createClient } from '@/db/supabase/client';
-import { useSoundLibrary } from '@/features/sounds/ui/hooks/useSoundLibrary';
-import { useSoundStore } from '@/shared/store';
+} from '@/shared/ui/components/shadcn/card';
+import { Input } from '@/shared/ui/components/shadcn/input';
 import { truncateName } from '@/shared/utils';
 import { Key, Play, Search, Square, Trash2, Upload } from 'lucide-react';
 import { useEffect, useState } from 'react';

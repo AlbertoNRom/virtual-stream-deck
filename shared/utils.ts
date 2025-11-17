@@ -2,7 +2,7 @@ import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
+	return twMerge(clsx(inputs));
 }
 
 /**
@@ -11,8 +11,8 @@ export function cn(...inputs: ClassValue[]) {
  * @returns The filename without extension
  */
 export const removeExtension = (fileName: string): string => {
-  // Remove file extension by splitting at the last dot and taking the first part
-  return fileName.split('.').slice(0, -1).join('.') || fileName;
+	// Remove file extension by splitting at the last dot and taking the first part
+	return fileName.split('.').slice(0, -1).join('.') || fileName;
 };
 
 /**
@@ -21,8 +21,8 @@ export const removeExtension = (fileName: string): string => {
  * @returns The string with first letter capitalized
  */
 export const capitalizeFirst = (str: string): string => {
-  if (str.length === 0) return '';
-  return str.charAt(0).toUpperCase() + str.slice(1);
+	if (str.length === 0) return '';
+	return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 /**
@@ -31,12 +31,12 @@ export const capitalizeFirst = (str: string): string => {
  * @returns The processed string with capitalized first letter and no extension
  */
 export const capitalizeAndRemoveExtension = (fileName: string): string => {
-  const nameWithoutExtension = removeExtension(fileName);
-  return capitalizeFirst(nameWithoutExtension);
+	const nameWithoutExtension = removeExtension(fileName);
+	return capitalizeFirst(nameWithoutExtension);
 };
 
-  // Function to truncate long sound names
+// Function to truncate long sound names
 export const truncateName = (name: string, maxLength = 20) => {
-    if (name.length <= maxLength) return name;
-    return `${name.substring(0, maxLength)}...`;
-  };
+	if (name.length <= maxLength) return name;
+	return `${name.substring(0, maxLength)}...`;
+};

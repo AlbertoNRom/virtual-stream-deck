@@ -7,7 +7,14 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": ["node_modules/", ".next/", "coverage/", "playwright/", "public/", "sound-examples/"]
+		"ignore": [
+			"node_modules/",
+			".next/",
+			"coverage/",
+			"playwright/",
+			"public/",
+			"sound-examples/"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -20,19 +27,19 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
-			"style": {			
-					"noNonNullAssertion": "warn"				  
+			"style": {
+				"noNonNullAssertion": "warn"
 			},
 			"complexity": {
-        		"noForEach": "off"
-      		},
+				"noForEach": "off"
+			},
 			"suspicious": {
-       			"noArrayIndexKey": "warn"
-      		},
+				"noArrayIndexKey": "warn"
+			},
 			"correctness": {
-       			"noUnusedVariables": "warn",
-       			"noUnusedLabels": "warn"
-      		}
+				"noUnusedVariables": "warn",
+				"noUnusedLabels": "warn"
+			}
 		}
 	},
 	"javascript": {

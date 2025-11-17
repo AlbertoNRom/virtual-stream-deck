@@ -1,65 +1,68 @@
-import { useSoundLibrary } from "@/features/sounds/ui/hooks/useSoundLibrary";
-import type { SoundRow, StreamDeckKeyRow } from "@/db/supabase/schema";
-import { useCallback, useEffect, useState } from "react";
+import type { SoundRow, StreamDeckKeyRow } from '@/db/supabase/schema';
+import { useSoundLibrary } from '@/features/sounds/ui/hooks/useSoundLibrary';
+import { useCallback, useEffect, useState } from 'react';
 
 export interface KeyConfigState {
-  config: StreamDeckKeyRow | null;
-  sounds: SoundRow[];
+	config: StreamDeckKeyRow | null;
+	sounds: SoundRow[];
 }
 
 export interface KeyConfigEvents {
-  setSoundId: (id: string) => void;
-  setLabel: (label: string) => void;
-  setColor: (color: string) => void;
-  setHotkey: (hotkey: string) => void;
-  save: () => Promise<{ ok: boolean; error?: string }>; 
+	setSoundId: (id: string) => void;
+	setLabel: (label: string) => void;
+	setColor: (color: string) => void;
+	setHotkey: (hotkey: string) => void;
+	save: () => Promise<{ ok: boolean; error?: string }>;
 }
 
 export const useKeyConfig = (
-  selectedKey: StreamDeckKeyRow | null,
-  sounds: SoundRow[],
-  deps: { updateKey: (k: StreamDeckKeyRow) => void }
+	selectedKey: StreamDeckKeyRow | null,
+	sounds: SoundRow[],
+	deps: { updateKey: (k: StreamDeckKeyRow) => void },
 ): [KeyConfigState, KeyConfigEvents] => {
-  const [config, setConfig] = useState<StreamDeckKeyRow | null>(selectedKey);
+	const [config, setConfig] = useState<StreamDeckKeyRow | null>(selectedKey);
 
-  useEffect(() => {
-    setConfig(selectedKey);
-  }, [selectedKey]);
+	useEffect(() => {
+		setConfig(selectedKey);
+	}, [selectedKey]);
 
-  const setSoundId = useCallback((id: string) => {
-    setConfig((c) => (c ? { ...c, sound_id: id } : c));
-  }, []);
+	const setSoundId = useCallback((id: string) => {
+		setConfig((c) => (c ? { ...c, sound_id: id } : c));
+	}, []);
 
-  const setLabel = useCallback((label: string) => {
-    setConfig((c) => (c ? { ...c, label } : c));
-  }, []);
+	const setLabel = useCallback((label: string) => {
+		setConfig((c) => (c ? { ...c, label } : c));
+	}, []);
 
-  const setColor = useCallback((color: string) => {
-    setConfig((c) => (c ? { ...c, color } : c));
-  }, []);
+	const setColor = useCallback((color: string) => {
+		setConfig((c) => (c ? { ...c, color } : c));
+	}, []);
 
-  const setHotkey = useCallback((hotkey: string) => {
-    const normalized = hotkey.toLowerCase();
-    setConfig((c) => (c ? { ...c, hotkey: normalized } : c));
-  }, []);
+	const setHotkey = useCallback((hotkey: string) => {
+		const normalized = hotkey.toLowerCase();
+		setConfig((c) => (c ? { ...c, hotkey: normalized } : c));
+	}, []);
 
-  const { updateKey: persistKey } = useSoundLibrary();
+	const { updateKey: persistKey } = useSoundLibrary();
 
-  const save = useCallback(async (): Promise<{ ok: boolean; error?: string }> => {
-    if (!config) return { ok: false, error: "No config" };
-    try {
-      // Actualiza el store de forma optimista para mantener la UI reactiva
-      deps.updateKey(config);
-      await persistKey(config);
-      return { ok: true };
-    } catch (e) {
-      const message = e instanceof Error ? e.message : "Unknown error";
-      return { ok: false, error: message };
-    }
-  }, [config, deps, persistKey]);
+	const save = useCallback(async (): Promise<{
+		ok: boolean;
+		error?: string;
+	}> => {
+		if (!config) return { ok: false, error: 'No config' };
+		try {
+			// Actualiza el store de forma optimista para mantener la UI reactiva
+			deps.updateKey(config);
+			await persistKey(config);
+			return { ok: true };
+		} catch (e) {
+			const message = e instanceof Error ? e.message : 'Unknown error';
+			return { ok: false, error: message };
+		}
+	}, [config, deps, persistKey]);
 
-  return [
-    { config, sounds },
-    { setSoundId, setLabel, setColor, setHotkey, save },
-  ];
-}
+	return [
+		{ config, sounds },
+		{ setSoundId, setLabel, setColor, setHotkey, save },
+	];
+};
