@@ -3,7 +3,7 @@ import { Toaster } from '@/shared/ui/components/shadcn/sonner';
 import { ThemeProvider } from '@/shared/ui/components/theme-provider';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -42,11 +42,6 @@ export const metadata: Metadata = {
 	metadataBase: new URL('https://virtualstreamdeck.com'),
 	alternates: {
 		canonical: '/',
-	},
-	viewport: {
-		width: 'device-width',
-		initialScale: 1,
-		maximumScale: 1,
 	},
 	robots: {
 		index: true,
@@ -102,6 +97,12 @@ export const metadata: Metadata = {
 		statusBarStyle: 'default',
 		title: 'Virtual Stream Deck',
 	},
+};
+
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+	maximumScale: 1,
 };
 
 const jsonLd = {
