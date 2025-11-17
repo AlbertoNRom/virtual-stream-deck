@@ -28,7 +28,7 @@ interface StreamDeckGridProps {
   config: GridConfig;
 }
 
-function SortableItem({ id, keyData, config }: { id: string; keyData: StreamDeckKey; config: GridConfig }) {
+function SortableItem({ id, keyData}: { id: string; keyData: StreamDeckKey; config: GridConfig }) {
   const {
     attributes,
     listeners,

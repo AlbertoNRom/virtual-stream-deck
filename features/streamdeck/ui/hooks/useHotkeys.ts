@@ -1,7 +1,7 @@
 "use client";
 
-import type { StreamDeckKey } from "@/shared/types";
 import { useSoundStore } from "@/shared/store";
+import type { StreamDeckKey } from "@/shared/types";
 import { useCallback, useMemo, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 
@@ -15,7 +15,7 @@ export const useStreamDeckHotkeys = () => {
   const { streamDeckKeys, playSound } = useSoundStore();
   const [registeredHotkeys, setRegisteredHotkeys] = useState<Array<{hotkey: string, soundId: string}>>([]);
   
-  // Function to handle hotkey activation
+  // TODO: Function to handle hotkey activation
   const handleHotkeyActivation = useCallback((soundId: string, hotkey: string) => {
     playSound(soundId);
   }, [playSound]);

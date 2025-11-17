@@ -1,6 +1,6 @@
-import type { Sound, StreamDeckKey } from '@/shared/types'
 import { useSoundStore } from '@/shared/store'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { Sound, StreamDeckKey } from '@/shared/types'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -37,7 +37,7 @@ const MockSoundLibrary = () => {
 }
 
 const MockStreamDeckGrid = () => {
-  const { streamDeckKeys, setSelectedKey, updateKey, gridConfig } = useSoundStore()
+  const { streamDeckKeys, setSelectedKey, gridConfig } = useSoundStore()
   
   return (
     <div data-testid="stream-deck-grid">
@@ -48,6 +48,7 @@ const MockStreamDeckGrid = () => {
           const key = streamDeckKeys.find(k => k.position === index)
           return (
             <button
+              // biome-ignore lint/suspicious/noArrayIndexKey: We're using the index as a key here, which is fine for this simple example
               key={`key-position-${index}`}
               type="button"
               data-testid={`key-${index}`}

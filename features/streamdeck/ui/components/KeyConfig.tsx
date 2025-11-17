@@ -103,13 +103,13 @@ export function KeyConfig() {
             placeholder="e.g.: ctrl+1, shift+a"
             className="text-sm sm:text-base"
           />
-          <p className="text-xs sm:text-sm text-muted-foreground">
+          <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
             Format: use combinations like <code className="text-xs">ctrl+1</code>, <code className="text-xs">shift+a</code>, <code className="text-xs">alt+s</code>. 
             All keys must be lowercase. Do not use spaces or commas.
           </p>
         </div>
         <Button
-          className="w-full text-sm sm:text-base py-2 sm:py-3"
+          className="mt-2 sm:mt-3 w-full text-sm sm:text-base py-2 sm:py-3"
           onClick={handleSave}
         >
           Save Changes

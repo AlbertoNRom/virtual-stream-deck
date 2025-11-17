@@ -71,13 +71,13 @@ describe('useKeyConfig', () => {
     const updateKeyMock = vi.fn()
     persistKeyMock.mockRejectedValueOnce(new Error('persist failed'))
 
-    let capturedState: KeyConfigState = { config: selectedKey, sounds }
+    let _capturedState: KeyConfigState = { config: selectedKey, sounds }
     let capturedEvents: KeyConfigEvents | null = null
 
     function Harness() {
       const [state, events] = useKeyConfig(selectedKey, sounds, { updateKey: updateKeyMock })
       useEffect(() => {
-        capturedState = state
+        _capturedState = state
         capturedEvents = events
       }, [state, events])
       return null

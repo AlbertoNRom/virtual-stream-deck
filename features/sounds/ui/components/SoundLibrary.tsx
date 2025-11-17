@@ -139,12 +139,12 @@ export function SoundLibrary() {
 
   return (
     <Card className="h-full glassmorphism">
-      <CardHeader className="p-4 sm:p-6">
+            <CardHeader className="p-4 sm:p-6">
         <CardTitle className="text-lg sm:text-xl">Sound Library</CardTitle>
         <CardDescription className="text-sm sm:text-base">Manage your sound collection</CardDescription>
         <div className="flex flex-col gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-2 top-3 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2 h-4 w-4 text-muted-foreground" style={{ marginTop: '12px' }} />
             <Input
               placeholder="Search sounds..."
               value={search}
@@ -171,7 +171,7 @@ export function SoundLibrary() {
       <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
         <div
           {...getRootProps()}
-          className={`border-2 border-dashed rounded-lg p-4 sm:p-6 lg:p-8 text-center transition-colors ${
+          className={`border-2 border-dashed rounded-lg mb-4 sm:mb-6 p-4 sm:p-6 lg:p-8 text-center transition-colors ${
             isDragActive ? "border-primary bg-primary/10" : "border-muted"
           } ${
             sounds.length >= 9 ? "opacity-50 cursor-not-allowed" : ""
@@ -207,7 +207,7 @@ export function SoundLibrary() {
           </div>
         )}
         
-        <div className="space-y-1 sm:space-y-2">
+        <div className="mt-5 sm:mt-6 space-y-2 sm:space-y-3">
           {filteredSounds.map((sound) => (
             <div
               key={sound.id}
