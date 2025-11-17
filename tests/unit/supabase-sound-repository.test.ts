@@ -1,6 +1,6 @@
+import { Sound } from '@/features/sounds/domain/entities/Sound'
+import { SupabaseSoundRepository } from '@/features/sounds/infra/supabase/SupabaseSoundRepository'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { SupabaseSoundRepository } from '@/core/infrastructure/supabase/SupabaseSoundRepository'
-import { Sound } from '@/core/domain/entities/Sound'
 
 // Mock del cliente de Supabase
 const mockSupabaseClient = {
@@ -12,7 +12,7 @@ const mockSupabaseClient = {
   delete: vi.fn().mockReturnThis(),
 }
 
-vi.mock('@/utils/supabase/client', () => ({
+vi.mock('@/db/supabase/client', () => ({
   createClient: () => mockSupabaseClient,
 }))
 

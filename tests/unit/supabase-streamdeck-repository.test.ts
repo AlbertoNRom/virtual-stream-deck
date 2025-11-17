@@ -1,6 +1,6 @@
+import { StreamDeckKey } from '@/features/streamdeck/domain/entities/StreamDeckKey'
+import { SupabaseStreamDeckKeyRepository } from '@/features/streamdeck/infra/supabase/SupabaseStreamDeckKeyRepository'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { SupabaseStreamDeckKeyRepository } from '@/core/infrastructure/supabase/SupabaseStreamDeckKeyRepository'
-import { StreamDeckKey } from '@/core/domain/entities/StreamDeckKey'
 
 // Mock del cliente de Supabase
 const mockSupabaseClient = {
@@ -11,7 +11,7 @@ const mockSupabaseClient = {
   delete: vi.fn().mockReturnThis(),
 }
 
-vi.mock('@/utils/supabase/client', () => ({
+vi.mock('@/db/supabase/client', () => ({
   createClient: () => mockSupabaseClient,
 }))
 

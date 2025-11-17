@@ -1,5 +1,5 @@
-import { useKeyConfig } from '@/lib/hooks/useKeyConfig'
-import type { KeyConfigEvents, KeyConfigState } from '@/lib/hooks/useKeyConfig'
+import { useKeyConfig } from '@/features/streamdeck/ui/hooks/useKeyConfig'
+import type { KeyConfigEvents, KeyConfigState } from '@/features/streamdeck/ui/hooks/useKeyConfig'
 import { act, render } from '@testing-library/react'
 import React, { useEffect } from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -8,7 +8,7 @@ import { describe, expect, it, vi } from 'vitest'
 const { persistKeyMock } = vi.hoisted(() => ({
   persistKeyMock: vi.fn().mockResolvedValue(undefined),
 }))
-vi.mock('@/lib/hooks/useSoundLibrary', () => ({
+vi.mock('@/features/sounds/ui/hooks/useSoundLibrary', () => ({
   useSoundLibrary: () => ({
     updateKey: persistKeyMock,
   }),

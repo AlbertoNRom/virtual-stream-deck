@@ -1,12 +1,12 @@
-import { StreamDeckGrid } from '@/components/stream-deck-grid'
-import { useSoundStore } from '@/lib/store'
-import type { StreamDeckKey } from '@/lib/types'
+import { StreamDeckGrid } from '@/features/streamdeck/ui/components/StreamDeckGrid'
+import type { StreamDeckKey } from '@/shared/types'
+import { useSoundStore } from '@/shared/store'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the store
-vi.mock('@/lib/store')
-vi.mock('@/lib/hooks/use-hotkeys', () => ({
+vi.mock('@/shared/store')
+vi.mock('@/shared/hooks/useHotkeys', () => ({
   useStreamDeckHotkeys: vi.fn(),
 }))
 

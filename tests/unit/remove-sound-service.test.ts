@@ -1,10 +1,10 @@
+import type { SoundStorage } from '@/features/sounds/domain/ports/SoundStorage'
+import type { StreamDeckKeyRepository } from '@/features/streamdeck/domain/ports/StreamDeckKeyRepository'
+import { RemoveSound } from '@/features/sounds/application/RemoveSound'
+import { Sound } from '@/features/sounds/domain/entities/Sound'
+import type { SoundRepository } from '@/features/sounds/domain/ports/SoundRepository'
+import { StreamDeckKey } from '@/features/streamdeck/domain/entities/StreamDeckKey'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { RemoveSound } from '@/core/application/RemoveSound'
-import { Sound } from '@/core/domain/entities/Sound'
-import { StreamDeckKey } from '@/core/domain/entities/StreamDeckKey'
-import type { SoundRepository } from '@/core/domain/ports/SoundRepository'
-import type { StreamDeckKeyRepository } from '@/core/domain/ports/StreamDeckKeyRepository'
-import type { SoundStorage } from '@/core/domain/ports/SoundStorage'
 
 describe('RemoveSound Service', () => {
   let removeSound: RemoveSound

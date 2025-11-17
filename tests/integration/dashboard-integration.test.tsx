@@ -1,5 +1,5 @@
-import { useSoundStore } from '@/lib/store'
-import type { Sound, StreamDeckKey } from '@/lib/types'
+import type { Sound, StreamDeckKey } from '@/shared/types'
+import { useSoundStore } from '@/shared/store'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -108,7 +108,7 @@ const MockDashboard = () => {
 }
 
 // Mock the store
-vi.mock('@/lib/store')
+vi.mock('@/shared/store')
 
 const mockSounds: Sound[] = [
   {

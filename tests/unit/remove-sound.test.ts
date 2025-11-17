@@ -1,9 +1,9 @@
-import { RemoveSound } from "@/core/application/RemoveSound";
-import { Sound } from "@/core/domain/entities/Sound";
-import { StreamDeckKey } from "@/core/domain/entities/StreamDeckKey";
-import { InMemorySoundRepository } from "@/core/infrastructure/memory/InMemorySoundRepository";
-import { InMemorySoundStorage } from "@/core/infrastructure/memory/InMemorySoundStorage";
-import { InMemoryStreamDeckKeyRepository } from "@/core/infrastructure/memory/InMemoryStreamDeckKeyRepository";
+import { RemoveSound } from "@/features/sounds/application/RemoveSound";
+import { Sound } from "@/features/sounds/domain/entities/Sound";
+import { InMemorySoundRepository } from "@/features/sounds/infra/memory/InMemorySoundRepository";
+import { InMemorySoundStorage } from "@/features/sounds/infra/memory/InMemorySoundStorage";
+import { StreamDeckKey } from "@/features/streamdeck/domain/entities/StreamDeckKey";
+import { InMemoryStreamDeckKeyRepository } from "@/features/streamdeck/infra/memory/InMemoryStreamDeckKeyRepository";
 import { describe, expect, it } from "vitest";
 
 describe("RemoveSound", () => {

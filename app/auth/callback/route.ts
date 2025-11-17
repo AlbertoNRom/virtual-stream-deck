@@ -1,5 +1,5 @@
 // The client you created from the Server-Side Auth instructions
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/db/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function GET(request: Request) {

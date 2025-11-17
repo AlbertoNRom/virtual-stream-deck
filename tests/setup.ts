@@ -24,7 +24,7 @@ vi.mock('next/navigation', () => ({
 }))
 
 // Mock Supabase client
-vi.mock('@/utils/supabase/client', () => ({
+vi.mock('@/db/supabase/client', () => ({
   createClient: () => ({
     auth: {
       getUser: vi.fn().mockResolvedValue({

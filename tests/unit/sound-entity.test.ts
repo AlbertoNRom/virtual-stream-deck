@@ -1,5 +1,5 @@
+import { Sound } from '@/features/sounds/domain/entities/Sound'
 import { describe, expect, it } from 'vitest'
-import { Sound } from '@/core/domain/entities/Sound'
 
 describe('Sound Entity', () => {
   const validSoundParams = {

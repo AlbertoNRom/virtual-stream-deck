@@ -1,7 +1,7 @@
-import { describe, it, expect } from "vitest";
-import { UploadSound } from "@/core/application/UploadSound";
-import { InMemorySoundRepository } from "@/core/infrastructure/memory/InMemorySoundRepository";
-import { InMemoryStreamDeckKeyRepository } from "@/core/infrastructure/memory/InMemoryStreamDeckKeyRepository";
+import { UploadSound } from "@/features/sounds/application/UploadSound";
+import { InMemorySoundRepository } from "@/features/sounds/infra/memory/InMemorySoundRepository";
+import { InMemoryStreamDeckKeyRepository } from "@/features/streamdeck/infra/memory/InMemoryStreamDeckKeyRepository";
+import { describe, expect, it } from "vitest";
 
 describe("UploadSound", () => {
   it("persiste un sonido válido en el repositorio", async () => {

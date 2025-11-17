@@ -1,9 +1,9 @@
+import { Sound } from '@/features/sounds/domain/entities/Sound'
+import type { SoundRepository } from '@/features/sounds/domain/ports/SoundRepository'
+import { EnsureStreamDeckKeyForSound } from '@/features/streamdeck/application/EnsureStreamDeckKeyForSound'
+import { StreamDeckKey } from '@/features/streamdeck/domain/entities/StreamDeckKey'
+import type { StreamDeckKeyRepository } from '@/features/streamdeck/domain/ports/StreamDeckKeyRepository'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { EnsureStreamDeckKeyForSound } from '@/core/application/EnsureStreamDeckKeyForSound'
-import { Sound } from '@/core/domain/entities/Sound'
-import { StreamDeckKey } from '@/core/domain/entities/StreamDeckKey'
-import type { SoundRepository } from '@/core/domain/ports/SoundRepository'
-import type { StreamDeckKeyRepository } from '@/core/domain/ports/StreamDeckKeyRepository'
 
 // Mock global crypto
 Object.defineProperty(globalThis, 'crypto', {

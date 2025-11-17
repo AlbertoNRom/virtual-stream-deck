@@ -1,12 +1,12 @@
-import { KeyConfig } from '@/components/key-config'
-import { useSoundStore } from '@/lib/store'
-import type { StreamDeckKey } from '@/lib/types'
+import { KeyConfig } from '@/features/streamdeck/ui/components/KeyConfig'
+import type { StreamDeckKey } from '@/shared/types'
+import { useSoundStore } from '@/shared/store'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the store
-vi.mock('@/lib/store')
+vi.mock('@/shared/store')
 
 const mockStreamDeckKey: StreamDeckKey = {
   id: 'key-1',

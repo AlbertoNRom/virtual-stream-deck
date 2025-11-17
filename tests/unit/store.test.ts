@@ -1,5 +1,5 @@
-import { useSoundStore } from '@/lib/store'
-import type { Sound, StreamDeckKey } from '@/lib/types'
+import type { Sound, StreamDeckKey } from '@/shared/types'
+import { useSoundStore } from '@/shared/store'
 import { beforeEach, describe, expect, it } from 'vitest'
 
 // Mock data

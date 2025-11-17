@@ -1,12 +1,12 @@
-import { SoundLibrary } from '@/components/sound-library'
-import { useSoundStore } from '@/lib/store'
-import type { Sound } from '@/lib/types'
+import { SoundLibrary } from '@/features/sounds/ui/components/SoundLibrary'
+import type { Sound } from '@/shared/types'
+import { useSoundStore } from '@/shared/store'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the store
-vi.mock('@/lib/store', () => ({
+vi.mock('@/shared/store', () => ({
   useSoundStore: vi.fn(),
 }))
 

@@ -1,5 +1,5 @@
+import { StreamDeckKey } from '@/features/streamdeck/domain/entities/StreamDeckKey'
 import { describe, expect, it } from 'vitest'
-import { StreamDeckKey } from '@/core/domain/entities/StreamDeckKey'
 
 describe('StreamDeckKey Entity', () => {
   const validKeyParams = {
