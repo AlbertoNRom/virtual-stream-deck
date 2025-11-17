@@ -20,7 +20,6 @@
 - 📱 **Responsive Design** - Works seamlessly on desktop, tablet, and mobile devices
 - 🔐 **User Authentication** - Secure login with Supabase Auth
 - ☁️ **Cloud Storage** - Store and sync your sounds across devices
-- 🚀 **PWA Ready** - Install as a native app on any device
 
 ## 🚀 Quick Start
 
@@ -28,7 +27,7 @@
 
 - Node.js 18+ and npm/pnpm
 - Supabase account
-- Google Cloud Platform account (for storage)
+- Google Cloud Platform account (for auth)
 
 ### Installation
 
@@ -57,9 +56,8 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 NEXT_PUBLIC_SUPABASE_DB_URL=postgres_connection_string
    
-# Google Cloud Storage (Optional)
-GOOGLE_CLOUD_PROJECT_ID=your_gcp_project_id
-GOOGLE_CLOUD_STORAGE_BUCKET=your_storage_bucket
+# Sentry (Optional)
+SENTRY_AUTH_TOKEN=your_sentry_auth_token
 ```
 
 4. **Run the development server**
@@ -83,82 +81,37 @@ GOOGLE_CLOUD_STORAGE_BUCKET=your_storage_bucket
 
 ### 2. Database Schema
 
-Run the following SQL in your Supabase SQL Editor:
+Este proyecto define el esquema con DrizzleORM en `utils/supabase/schema.ts` y aplica migraciones con `drizzle-kit`.
 
-```sql
--- Create profiles table
-create table profiles (
-  id uuid references auth.users on delete cascade not null primary key,
-  updated_at timestamp with time zone,
-  username text unique,
-  full_name text,
-  avatar_url text,
-  website text,
-  constraint username_length check (char_length(username) >= 3)
-);
+Pasos para preparar la base de datos (Supabase/Postgres):
 
--- Create sounds table
-create table sounds (
-  id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users on delete cascade not null,
-  name text not null,
-  url text not null,
-  duration real,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
+1. Configura la cadena de conexión en `.env.local`:
+   - `NEXT_PUBLIC_SUPABASE_DB_URL=postgresql://<usuario>:<password>@<host>:<puerto>/<db>`
+   - En Supabase, copia la Connection string (URI) desde la sección de Base de datos.
 
--- Create stream_deck_keys table
-create table stream_deck_keys (
-  id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users on delete cascade not null,
-  sound_id uuid references sounds(id) on delete cascade,
-  position int not null,
-  label text,
-  color text,
-  icon text,
-  hotkey text,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null
-);
+2. Genera las migraciones a partir del esquema:
+   ```bash
+   npm run drizzle:generate
+   # o
+   pnpm drizzle:generate
+   ```
 
--- Set up Row Level Security (RLS)
-alter table profiles enable row level security;
-alter table sounds enable row level security;
-alter table stream_deck_keys enable row level security;
+3. Aplica las migraciones en tu base de datos:
+   ```bash
+   npm run drizzle:push
+   # o
+   pnpm drizzle:push
+   ```
 
--- Create policies
-create policy "Public profiles are viewable by everyone." on profiles
-  for select using (true);
+4. (Opcional) Inspecciona el estado con Drizzle Studio:
+   ```bash
+   npm run drizzle:studio
+   ```
 
-create policy "Users can insert their own profile." on profiles
-  for insert with check (auth.uid() = id);
-
-create policy "Users can update own profile." on profiles
-  for update using (auth.uid() = id);
-
-create policy "Users can view own sounds." on sounds
-  for select using (auth.uid() = user_id);
-
-create policy "Users can insert own sounds." on sounds
-  for insert with check (auth.uid() = user_id);
-
-create policy "Users can update own sounds." on sounds
-  for update using (auth.uid() = user_id);
-
-create policy "Users can delete own sounds." on sounds
-  for delete using (auth.uid() = user_id);
-
-create policy "Users can view own keys." on stream_deck_keys
-  for select using (auth.uid() = user_id);
-
-create policy "Users can insert own keys." on stream_deck_keys
-  for insert with check (auth.uid() = user_id);
-
-create policy "Users can update own keys." on stream_deck_keys
-  for update using (auth.uid() = user_id);
-
-create policy "Users can delete own keys." on stream_deck_keys
-  for delete using (auth.uid() = user_id);
-```
+Notas:
+- El esquema incluye las tablas `sounds` y `stream_deck_keys` por defecto (ver `utils/supabase/schema.ts`).
+- Las políticas RLS u otros ajustes avanzados pueden gestionarse mediante migraciones adicionales si las necesitas.
+- No es necesario ejecutar SQL manual: Drizzle genera y aplica los cambios automáticamente.
 
 ### 3. Storage Setup
 
@@ -189,7 +142,7 @@ create policy "Users can delete own sounds" on storage.objects
    - `http://localhost:3000/auth/callback`
    - `https://yourdomain.com/auth/callback`
 
-## ☁️ Google Cloud Platform Setup (Optional)
+## ☁️ Google Cloud Platform Setup
 
 ### 1. Create a GCP Project
 
@@ -197,31 +150,20 @@ create policy "Users can delete own sounds" on storage.objects
 2. Create a new project or select existing one
 3. Enable the Cloud Storage API
 
-### 2. Create a Storage Bucket
+### 2. Crear un ID de cliente OAuth 2.0 (Aplicación web)
 
-```bash
-# Install Google Cloud CLI
-curl https://sdk.cloud.google.com | bash
-exec -l $SHELL
-gcloud init
+1. Entra en Google Cloud Console → "APIs & Services" → "OAuth consent screen" y configura el consentimiento si aún no lo has hecho.
+2. Ve a "APIs & Services" → "Credentials" → "Create credentials" → "OAuth client ID".
+3. Tipo de aplicación: "Web application".
+4. Añade los Orígenes autorizados de JavaScript:
+   - `http://localhost:3000`
+   - `https://tu-dominio.com` (producción)
+5. Añade los URIs de redireccionamiento autorizados:
+   - `http://localhost:3000/auth/callback`
+   - `https://tu-dominio.com/auth/callback`
+6. Guarda y copia el `Client ID` y el `Client Secret`.
+7. En Supabase: "Authentication" → "Providers" → "Google" → pega el `Client ID` y `Client Secret` que acabas de generar y guarda.
 
-# Create a storage bucket
-gsutil mb gs://your-virtual-stream-deck-bucket
-
-# Set bucket permissions (optional)
-gsutil iam ch allUsers:objectViewer gs://your-virtual-stream-deck-bucket
-```
-
-### 3. Service Account Setup
-
-1. Go to IAM & Admin > Service Accounts
-2. Create a new service account
-3. Grant "Storage Object Admin" role
-4. Create and download a JSON key
-5. Set the environment variable:
-   ```bash
-   export GOOGLE_APPLICATION_CREDENTIALS="path/to/your/service-account-key.json"
-   ```
 
 ## 🛠️ Development
 
@@ -229,48 +171,50 @@ gsutil iam ch allUsers:objectViewer gs://your-virtual-stream-deck-bucket
 
 ```
 virtual-stream-deck/
-├── app/                    # Next.js App Router
-│   ├── auth/               # Auth routes and callback
-│   ├── dashboard/          # Main dashboard page
-│   ├── globals.css         # Global styles
-│   ├── icon.tsx            # App icon
-│   ├── layout.tsx          # Root layout
-│   ├── page.tsx            # Home page
-│   └── sitemap.ts          # SEO sitemap
-├── components/             # React components
-│   ├── ui/                 # Reusable UI components
-│   ├── auth-button.tsx     # Authentication component
-│   ├── key-config.tsx      # Key configuration
-│   ├── sound-library.tsx   # Sound management
-│   └── stream-deck-grid.tsx# Main grid component
-├── core/                   # Clean architecture core
-│   ├── domain/             # Entities and repository/storage ports
-│   ├── application/        # Use cases
-│   └── infrastructure/     # Adapters (Supabase, memory) mapping DB↔domain
-│       ├── supabase/
-│       └── memory/
-├── lib/                    # Presentation layer utilities
-│   ├── adapters/           # Domain↔UI mappers
-│   ├── bloc/               # Sound library hook/BLoC
-│   ├── hooks/              # Custom React hooks
-│   ├── services/           # UI-facing services
+├── app/                    # Next.js App Router (server components)
+│   ├── auth/               # Rutas de auth y callback
+│   ├── dashboard/          # Página principal del panel
+│   ├── global-error.tsx    # Error boundary
+│   ├── globals.css         # Estilos globales
+│   ├── icon.tsx            # Icono de la app
+│   ├── layout.tsx          # Layout raíz
+│   ├── page.tsx            # Home
+│   └── sitemap.ts          # Sitemap SEO
+├── components/             # Componentes UI (cliente)
+│   ├── ui/                 # Primitivas shadcn/ui
+│   ├── auth-button.tsx
+│   ├── key-config.tsx
+│   ├── sound-library.tsx
+│   ├── stream-deck-grid.tsx
+│   └── theme-provider.tsx
+├── core/                   # Núcleo Clean Architecture
+│   ├── domain/             # Entidades y puertos (interfaces)
+│   ├── application/        # Casos de uso
+│   └── infrastructure/     # Adaptadores (Supabase, memoria)
+├── lib/                    # Capa de presentación
+│   ├── adapters/           # Mappers Domain↔UI
+│   ├── hooks/              # useSoundLibrary, useKeyConfig, useHotkeys
+│   ├── services/           # soundService
 │   ├── store.ts            # Zustand store
-│   ├── types.ts            # UI types
-│   └── utils.ts            # UI helper functions
-├── utils/                  # Server utilities
-│   └── supabase/           # Supabase SSR client, middleware, schema, Drizzle
+│   ├── types.ts            # Tipos UI
+│   └── utils.ts            # Utilidades UI
+├── utils/
+│   └── supabase/           # Cliente, server, schema, migrations
 ├── tests/                  # Unit, components, integration
-├── playwright/             # E2E artifacts
-├── public/                 # Static assets
-└── config files            # Tailwind, Vitest, Playwright, etc.
+├── public/                 # Assets estáticos
+└── config files            # Tailwind, Vitest, Playwright, Biome, Drizzle
 ```
 
 ### Architecture
-- **Domain**: Core entities and ports in `core/domain` define business rules.
-- **Application**: Use cases in `core/application` orchestrate domain operations.
-- **Infrastructure**: Adapters in `core/infrastructure/supabase|memory` implement ports.
-- **Repositories**: Supabase/memory adapters map DB rows directly to domain entities.
-- **Presentation**: UI adapters in `lib/adapters/index.ts` convert domain↔UI; hook in `lib/bloc/soundLibraryBloc.ts` manages UI state via `lib/store.ts`.
+- **Domain**: Entidades y puertos en `core/domain` definen las reglas de negocio (p. ej., `Sound`, `StreamDeckKey`; puertos `SoundRepository`, `StreamDeckKeyRepository`, `SoundStorage`).
+- **Application**: Casos de uso en `core/application` orquestan los puertos de dominio (`UploadSound`, `RemoveSound`, `EnsureStreamDeckKeyForSound`). Lógica pura, sin dependencias de frameworks.
+- **Infrastructure**: Adaptadores en `core/infrastructure/supabase|memory` implementan los puertos contra Supabase o memoria. El esquema de BD se define con Drizzle (`utils/supabase/schema.ts`).
+- **Presentation**: BLoC y hooks (`lib/hooks/useSoundLibrary.ts`, `lib/hooks/useKeyConfig.ts`) median entre UI y casos de uso; estado global con Zustand (`lib/store.ts`). Mappers en `lib/adapters/index.ts` convierten Domain↔UI. Componentes en `components/` (shadcn/ui, Next.js).
+
+**Flujo típico**
+- Subida de sonido: UI → `SoundLibrary.upload` → `UploadSound.execute` → repositorios/almacenamiento → actualización optimista de `store` → refresco desde Supabase.
+- Eliminación de sonido: UI → `SoundLibrary.remove` → `RemoveSound.execute` → elimina claves relacionadas y sonido; errores de storage se ignoran para no bloquear la operación.
+- Configuración de tecla: UI → `useKeyConfig.save` → `SoundLibrary.updateKey` → persistencia en BD y sincronización de `store`.
 
 ### Available Scripts
 
@@ -332,9 +276,9 @@ npx tsc --noEmit
 
 - MP3
 - WAV
-- OGG
-- M4A
-- FLAC
+- OGG (soon)
+- M4A (soon)
+- FLAC (soon)
 
 ### Keyboard Shortcuts
 
@@ -354,13 +298,7 @@ npx tsc --noEmit
 
 ### Other Platforms
 
-The app can be deployed to any platform that supports Next.js:
-
-- Netlify
-- Railway
-- DigitalOcean App Platform
-- AWS Amplify
-- Google Cloud Run
+The app can be deployed to any platform that supports Next.js.
 
 ## 🤝 Contributing
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { useSoundLibraryBloc } from "@/lib/bloc/soundLibraryBloc";
-import { useStreamDeckHotkeys } from "@/lib/hooks/use-hotkeys";
+import { useStreamDeckHotkeys } from "@/lib/hooks/useHotkeys";
+import { useSoundLibrary } from "@/lib/hooks/useSoundLibrary";
 import { useSoundStore } from "@/lib/store";
 import type { GridConfig, StreamDeckKey } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -86,7 +86,7 @@ function SortableItem({ id, keyData, config }: { id: string; keyData: StreamDeck
 export function StreamDeckGrid({ config }: StreamDeckGridProps) {
   const { streamDeckKeys } = useSoundStore();
 
-  const { loadInitialKeys, reorderKeys } = useSoundLibraryBloc();
+  const { loadInitialKeys, reorderKeys } = useSoundLibrary();
 
   useStreamDeckHotkeys();
 

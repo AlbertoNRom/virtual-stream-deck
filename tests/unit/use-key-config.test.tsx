@@ -1,5 +1,5 @@
-import { useKeyConfigBloc } from '@/lib/bloc/keyConfigBloc'
-import type { KeyConfigEvents, KeyConfigState } from '@/lib/bloc/keyConfigBloc'
+import { useKeyConfig } from '@/lib/hooks/useKeyConfig'
+import type { KeyConfigEvents, KeyConfigState } from '@/lib/hooks/useKeyConfig'
 import { act, render } from '@testing-library/react'
 import React, { useEffect } from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -8,13 +8,13 @@ import { describe, expect, it, vi } from 'vitest'
 const { persistKeyMock } = vi.hoisted(() => ({
   persistKeyMock: vi.fn().mockResolvedValue(undefined),
 }))
-vi.mock('@/lib/bloc/soundLibraryBloc', () => ({
-  useSoundLibraryBloc: () => ({
+vi.mock('@/lib/hooks/useSoundLibrary', () => ({
+  useSoundLibrary: () => ({
     updateKey: persistKeyMock,
   }),
 }))
 
-describe('useKeyConfigBloc', () => {
+describe('useKeyConfig', () => {
   const selectedKey = {
     id: 'key-1',
     user_id: 'user-1',
@@ -38,7 +38,7 @@ describe('useKeyConfigBloc', () => {
     let capturedEvents: KeyConfigEvents | null = null
 
     function Harness() {
-      const [state, events] = useKeyConfigBloc(selectedKey, sounds, { updateKey: updateKeyMock })
+      const [state, events] = useKeyConfig(selectedKey, sounds, { updateKey: updateKeyMock })
       useEffect(() => {
         capturedState = state
         capturedEvents = events
@@ -75,7 +75,7 @@ describe('useKeyConfigBloc', () => {
     let capturedEvents: KeyConfigEvents | null = null
 
     function Harness() {
-      const [state, events] = useKeyConfigBloc(selectedKey, sounds, { updateKey: updateKeyMock })
+      const [state, events] = useKeyConfig(selectedKey, sounds, { updateKey: updateKeyMock })
       useEffect(() => {
         capturedState = state
         capturedEvents = events

@@ -17,13 +17,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useKeyConfigBloc } from "@/lib/bloc/keyConfigBloc";
+import { useKeyConfig } from "@/lib/hooks/useKeyConfig";
 import { useSoundStore } from "@/lib/store";
 import { toast } from "sonner";
 
 export function KeyConfig() {
   const { sounds, updateKey, selectedKey } = useSoundStore();
-  const [state, events] = useKeyConfigBloc(selectedKey, sounds, { updateKey });
+  const [state, events] = useKeyConfig(selectedKey, sounds, { updateKey });
   const { config } = state;
 
   if (!selectedKey) {

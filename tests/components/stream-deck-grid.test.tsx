@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
 import { StreamDeckGrid } from '@/components/stream-deck-grid'
 import { useSoundStore } from '@/lib/store'
 import type { StreamDeckKey } from '@/lib/types'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Mock the store
 vi.mock('@/lib/store')

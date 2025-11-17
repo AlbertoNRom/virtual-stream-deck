@@ -1,6 +1,6 @@
+import { useSoundLibrary } from "@/lib/hooks/useSoundLibrary";
 import type { Sound, StreamDeckKey } from "@/lib/types";
 import { useCallback, useEffect, useState } from "react";
-import { useSoundLibraryBloc } from "@/lib/bloc/soundLibraryBloc";
 
 export interface KeyConfigState {
   config: StreamDeckKey | null;
@@ -15,7 +15,7 @@ export interface KeyConfigEvents {
   save: () => Promise<{ ok: boolean; error?: string }>; 
 }
 
-export const useKeyConfigBloc = (
+export const useKeyConfig = (
   selectedKey: StreamDeckKey | null,
   sounds: Sound[],
   deps: { updateKey: (k: StreamDeckKey) => void }
@@ -43,7 +43,7 @@ export const useKeyConfigBloc = (
     setConfig((c) => (c ? { ...c, hotkey: normalized } : c));
   }, []);
 
-  const { updateKey: persistKey } = useSoundLibraryBloc();
+  const { updateKey: persistKey } = useSoundLibrary();
 
   const save = useCallback(async (): Promise<{ ok: boolean; error?: string }> => {
     if (!config) return { ok: false, error: "No config" };

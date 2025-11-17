@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useSoundLibraryBloc } from "@/lib/bloc/soundLibraryBloc";
+import { useSoundLibrary } from "@/lib/hooks/useSoundLibrary";
 import { useSoundStore } from "@/lib/store";
 import { createClient } from "@/utils/supabase/client";
 import { Key, Play, Search, Square, Trash2, Upload } from "lucide-react";
@@ -28,10 +28,10 @@ export function SoundLibrary() {
     setSelectedKey
   } = useSoundStore();
 
-  // Hook BLoC reactivo
-  const { upload, remove, ensureKeyForSound, isUploading, isRemoving } = useSoundLibraryBloc();
+  // Hook BLoC 
+  const { upload, remove, ensureKeyForSound, isUploading, isRemoving } = useSoundLibrary();
 
-  // Estado para el sonido seleccionado actualmente
+  // Select sound state
   const [selectedSoundId, setSelectedSoundId] = useState<string | null>(null);
   
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

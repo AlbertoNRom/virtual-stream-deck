@@ -2,8 +2,8 @@ import { RemoveSound } from "@/core/application/RemoveSound";
 import { UploadSound } from "@/core/application/UploadSound";
 import { EnsureStreamDeckKeyForSound } from "@/core/application/EnsureStreamDeckKeyForSound";
 import { SupabaseSoundRepository } from "@/core/infrastructure/supabase/SupabaseSoundRepository";
-import { SupabaseStreamDeckKeyRepository } from "@/core/infrastructure/supabase/SupabaseStreamDeckKeyRepository";
 import { SupabaseSoundStorage } from "@/core/infrastructure/supabase/SupabaseSoundStorage";
+import { SupabaseStreamDeckKeyRepository } from "@/core/infrastructure/supabase/SupabaseStreamDeckKeyRepository";
 
 export function createSoundService() {
   const repo = new SupabaseSoundRepository();

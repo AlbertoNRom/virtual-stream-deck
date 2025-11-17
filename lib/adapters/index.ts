@@ -1,8 +1,8 @@
+import type { Sound } from "@/core/domain/entities/Sound";
+import type { StreamDeckKey } from "@/core/domain/entities/StreamDeckKey";
 import type { Sound as UISound, StreamDeckKey as UIStreamDeckKey } from "@/lib/types";
-import type { Sound as DomainSound } from "@/core/domain/entities/Sound";
-import type { StreamDeckKey as DomainStreamDeckKey } from "@/core/domain/entities/StreamDeckKey";
 
-export function domainSoundToUi(sound: DomainSound): UISound {
+export function soundToUi(sound: Sound): UISound {
   return {
     id: sound.id,
     user_id: sound.userId,
@@ -13,7 +13,7 @@ export function domainSoundToUi(sound: DomainSound): UISound {
   };
 }
 
-export function domainStreamDeckKeyToUi(key: DomainStreamDeckKey): UIStreamDeckKey {
+export function streamDeckKeyToUi(key: StreamDeckKey): UIStreamDeckKey {
   return {
     id: key.id,
     user_id: key.userId,
