@@ -36,7 +36,10 @@ function SortableItem({ id, keyData}: { id: string; keyData: StreamDeckKey; conf
     transform,
     transition,
     isDragging,
-  } = useSortable({ id });
+  } = useSortable({ 
+    id,
+    transition: null // Desactivar transición para evitar doble animación
+  });
 
   const { setSelectedKey, playSound } = useSoundStore();
 
@@ -59,8 +62,8 @@ function SortableItem({ id, keyData}: { id: string; keyData: StreamDeckKey; conf
   };
 
   const className = cn(
-    "relative aspect-square w-full p-2 sm:p-4 rounded-md shadow-sm cursor-grab",
-    isDragging ? "opacity-75" : "hover:shadow-md",
+    "relative aspect-square w-full p-2 sm:p-4 rounded-md cursor-grab sortable-item",
+    isDragging ? "opacity-75 sortable-item-dragging" : "",
     "flex items-center justify-center text-center select-none",
     "bg-primary/5 border border-primary/10"
   );
@@ -75,6 +78,7 @@ function SortableItem({ id, keyData}: { id: string; keyData: StreamDeckKey; conf
       type="button"
       onClick={handleClick}
       aria-label={keyData.label || `Key ${keyData.position + 1}`}
+      data-dragging={isDragging}
     >
       <span className="text-xs sm:text-sm md:text-base lg:text-lg font-medium">
         {keyData.label || `Key ${keyData.position + 1}`}
@@ -99,7 +103,7 @@ export function StreamDeckGrid({ config }: StreamDeckGridProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 5,
+        distance: 3,
       },
     }),
     useSensor(KeyboardSensor)
@@ -118,17 +122,25 @@ export function StreamDeckGrid({ config }: StreamDeckGridProps) {
 
     if (oldIndex === -1 || newIndex === -1) return;
 
+    // Actualizar el estado inmediatamente para evitar el parpadeo
     const newItems = arrayMove(streamDeckKeys, oldIndex, newIndex).map(
       (item, index) => ({
         ...item,
         position: index,
       })
     );
+    
+    // Actualizar el store localmente primero
+    const { setStreamDeckKeys } = useSoundStore.getState();
+    setStreamDeckKeys(newItems);
 
+    // Luego sincronizar con la base de datos en segundo plano
     try {
       await reorderKeys(newItems);
     } catch {
       toast.error("Failed to save key positions");
+      // Revertir al estado anterior si falla
+      setStreamDeckKeys(streamDeckKeys);
     }
   };
   

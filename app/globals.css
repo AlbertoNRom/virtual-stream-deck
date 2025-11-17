@@ -25,6 +25,18 @@
   --radius: 0.75rem;
 }
 
+/* Estilos para drag & drop suave */
+.sortable-item {
+  transition: none; /* Sin transición para evitar animación doble al soltar */
+}
+
+.sortable-item-dragging {
+  transform: scale(1.05);
+  z-index: 1000;
+  cursor: grabbing;
+  transition: none;
+}
+
 .dark {
   --background: 240 10% 3.9%;
   --foreground: 0 0% 98%;
