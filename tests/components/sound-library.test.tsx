@@ -1,7 +1,7 @@
 import type { SoundRow } from '@/db/supabase/schema';
 import { SoundLibrary } from '@/features/sounds/ui/components/SoundLibrary';
 import { useSoundStore } from '@/shared/store';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -217,11 +217,11 @@ describe('SoundLibrary', () => {
 				'Drag & drop audio files here, or click to select files',
 			),
 		).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /Supported formats: MP3, WAV, AAC, M4A, FLAC \| Max size: 1MB \| Limit: \d+\/9 sounds/,
-      ),
-    ).toBeInTheDocument();
+		expect(
+			screen.getByText(
+				/Supported formats: MP3, WAV, AAC, M4A, FLAC \| Max size: 1MB \| Limit: \d+\/9 sounds/,
+			),
+		).toBeInTheDocument();
 	});
 
 	it('should display sound limit warning when approaching limit', () => {

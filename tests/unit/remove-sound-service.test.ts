@@ -2,7 +2,6 @@ import { RemoveSound } from '@/features/sounds/application/RemoveSound';
 import { Sound } from '@/features/sounds/domain/entities/Sound';
 import type { SoundRepository } from '@/features/sounds/domain/ports/SoundRepository';
 import type { SoundStorage } from '@/features/sounds/domain/ports/SoundStorage';
-import { StreamDeckKey } from '@/features/streamdeck/domain/entities/StreamDeckKey';
 import type { StreamDeckKeyRepository } from '@/features/streamdeck/domain/ports/StreamDeckKeyRepository';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 

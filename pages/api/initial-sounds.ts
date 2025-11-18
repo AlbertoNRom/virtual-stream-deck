@@ -36,7 +36,7 @@ const uploadSharedSound = async (
 	try {
 		const fileBuffer = fs.readFileSync(localPath);
 
-		//@ts-ignore
+		//@ts-expect-error
 		const file = new File([fileBuffer], `${soundId}.mp3`, {
 			type: 'audio/mpeg',
 		});
@@ -167,10 +167,10 @@ export default async function handler(
 		];
 
 		if (soundsToInsert.length > 0) {
-		const { error: soundError } = await supabase
-			.from('sounds')
-			.insert(soundsToInsert)
-			.select();
+			const { error: soundError } = await supabase
+				.from('sounds')
+				.insert(soundsToInsert)
+				.select();
 
 			if (soundError)
 				throw new Error('Failed to insert example sounds', {
@@ -212,10 +212,10 @@ export default async function handler(
 		];
 
 		if (keysToInsert.length > 0) {
-		const { error: keyError } = await supabase
-			.from('stream_deck_keys')
-			.insert(keysToInsert)
-			.select();
+			const { error: keyError } = await supabase
+				.from('stream_deck_keys')
+				.insert(keysToInsert)
+				.select();
 
 			if (keyError)
 				throw new Error('Failed to insert stream deck keys', {

@@ -173,7 +173,7 @@ describe('UploadSound Service', () => {
 					userId: 'user-1',
 					file: mockFile,
 				}),
-      ).rejects.toThrow('File is too large. Maximum 1MB');
+			).rejects.toThrow('File is too large. Maximum 1MB');
 		});
 
 		it('should throw error when user has reached sound limit', async () => {
@@ -202,7 +202,7 @@ describe('UploadSound Service', () => {
 					userId: 'user-1',
 					file: mockFile,
 				}),
-      ).rejects.toThrow('You have reached the limit of 9 sounds');
+			).rejects.toThrow('You have reached the limit of 9 sounds');
 		});
 
 		it('should throw error when storage is not available', async () => {
@@ -225,7 +225,7 @@ describe('UploadSound Service', () => {
 					userId: 'user-1',
 					file: mockFile,
 				}),
-      ).rejects.toThrow('Storage not available to upload the file');
+			).rejects.toThrow('Storage not available to upload the file');
 		});
 	});
 

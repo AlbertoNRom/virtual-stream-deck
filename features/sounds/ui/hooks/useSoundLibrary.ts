@@ -1,12 +1,7 @@
 import { createClient } from '@/db/supabase/client';
 import type { StreamDeckKeyRow } from '@/db/supabase/schema';
-import { RemoveSound } from '@/features/sounds/application/RemoveSound';
-import { UploadSound } from '@/features/sounds/application/UploadSound';
-import { SupabaseSoundRepository } from '@/features/sounds/infra/supabase/SupabaseSoundRepository';
-import { SupabaseSoundStorage } from '@/features/sounds/infra/supabase/SupabaseSoundStorage';
-import { EnsureStreamDeckKeyForSound } from '@/features/streamdeck/application/EnsureStreamDeckKeyForSound';
-import { SupabaseStreamDeckKeyRepository } from '@/features/streamdeck/infra/supabase/SupabaseStreamDeckKeyRepository';
-import { soundToUi, streamDeckKeyToUi } from '@/shared/adapters';
+import { soundToDb, streamDeckKeyToDb } from '@/shared/adapters';
+import { createSoundService } from '@/shared/services/soundService';
 import { useSoundStore } from '@/shared/store';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -17,16 +12,7 @@ export type SoundLibraryState = {
 
 export const useSoundLibrary = () => {
 	const supabase = useMemo(() => createClient(), []);
-	const soundService = useMemo(() => {
-		const soundRepo = new SupabaseSoundRepository();
-		const keyRepo = new SupabaseStreamDeckKeyRepository();
-		const storage = new SupabaseSoundStorage();
-		return {
-			uploadSound: new UploadSound(soundRepo, keyRepo, storage),
-			removeSound: new RemoveSound(soundRepo, keyRepo, storage),
-			ensureKeyForSound: new EnsureStreamDeckKeyForSound(soundRepo, keyRepo),
-		};
-	}, []);
+	const soundService = useMemo(() => createSoundService(), []);
 
 	const [isUploading, setIsUploading] = useState(false);
 	const [isRemoving, setIsRemoving] = useState(false);
@@ -65,8 +51,7 @@ export const useSoundLibrary = () => {
 					.select('*')
 					.eq('user_id', uid)
 					.order('created_at', { ascending: false });
-				if (error)
-					throw new Error('Failed to fetch sounds', { cause: error });
+				if (error) throw new Error('Failed to fetch sounds', { cause: error });
 				setSounds(data ?? []);
 			} catch (error) {
 				throw new Error('Failed to refresh sounds', { cause: error as Error });
@@ -95,10 +80,10 @@ export const useSoundLibrary = () => {
 				const result = await soundService.uploadSound.execute({ userId, file });
 
 				const store = useSoundStore.getState();
-				const uiSound = soundToUi(result.sound);
+				const uiSound = soundToDb(result.sound);
 				store.addSound(uiSound);
 
-				const uiKey = streamDeckKeyToUi(result.key);
+				const uiKey = streamDeckKeyToDb(result.key);
 				store.setStreamDeckKeys([...store.streamDeckKeys, uiKey]);
 
 				await refreshSounds(userId);
@@ -148,8 +133,7 @@ export const useSoundLibrary = () => {
 				.from('stream_deck_keys')
 				.update(updatedKey)
 				.eq('id', updatedKey.id);
-			if (error)
-				throw new Error('Failed to update key', { cause: error });
+			if (error) throw new Error('Failed to update key', { cause: error });
 
 			const store = (useSoundStore.getState?.() ?? useSoundStore()) as {
 				updateKey?: (k: StreamDeckKeyRow) => void;

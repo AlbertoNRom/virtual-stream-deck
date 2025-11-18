@@ -1,10 +1,10 @@
-import { useKeyConfig } from '@/features/streamdeck/ui/hooks/useKeyConfig';
 import type {
 	KeyConfigEvents,
 	KeyConfigState,
 } from '@/features/streamdeck/ui/hooks/useKeyConfig';
+import { useKeyConfig } from '@/features/streamdeck/ui/hooks/useKeyConfig';
 import { act, render } from '@testing-library/react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 // Mock useSoundLibraryBloc to control persist behavior (evitar TDZ con mocks hoisted)

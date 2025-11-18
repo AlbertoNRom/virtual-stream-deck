@@ -1,4 +1,5 @@
 // The client you created from the Server-Side Auth instructions
+
 import { createClient } from '@/db/supabase/server';
 import { NextResponse } from 'next/server';
 

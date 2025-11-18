@@ -1,5 +1,4 @@
 import type { SoundId, UserId } from '../../../sounds/domain/entities/Sound';
-import type { KeyId } from '../entities/StreamDeckKey';
 import type { StreamDeckKey } from '../entities/StreamDeckKey';
 
 export interface StreamDeckKeyRepository {

@@ -11,7 +11,7 @@ export const createSoundService = () => {
 	const storage = new SupabaseSoundStorage();
 
 	return {
-		uploadSound: new UploadSound(repo, keys),
+		uploadSound: new UploadSound(repo, keys, storage),
 		removeSound: new RemoveSound(repo, keys, storage),
 		ensureKeyForSound: new EnsureStreamDeckKeyForSound(repo, keys),
 	};

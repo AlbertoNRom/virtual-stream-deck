@@ -1,8 +1,8 @@
 import { capitalizeAndRemoveExtension } from '@/shared/utils';
 import { StreamDeckKey } from '../../streamdeck/domain/entities/StreamDeckKey';
 import type { StreamDeckKeyRepository } from '../../streamdeck/domain/ports/StreamDeckKeyRepository';
-import { Sound } from '../domain/entities/Sound';
 import type { UserId } from '../domain/entities/Sound';
+import { Sound } from '../domain/entities/Sound';
 import type { SoundRepository } from '../domain/ports/SoundRepository';
 import type { SoundStorage } from '../domain/ports/SoundStorage';
 
@@ -51,16 +51,16 @@ export class UploadSound {
 		const { userId, file } = params;
 
 		if (file.size > MAX_SOUND_SIZE_BYTES) {
-			throw new Error(
-				`File is too large. Maximum ${MAX_SOUND_SIZE_MB}MB`,
-			);
+			throw new Error(`File is too large. Maximum ${MAX_SOUND_SIZE_MB}MB`);
 		}
 
 		let existingSounds: Sound[] = [];
 		try {
 			existingSounds = await this.sounds.listByUser(userId);
 		} catch (error) {
-			throw new Error('Failed to list sounds for user', { cause: error as Error });
+			throw new Error('Failed to list sounds for user', {
+				cause: error as Error,
+			});
 		}
 		if (existingSounds.length >= MAX_SOUNDS_PER_USER) {
 			throw new Error(
@@ -76,7 +76,9 @@ export class UploadSound {
 		try {
 			publicUrl = await this.storage.uploadAndGetPublicUrl(userId, file);
 		} catch (error) {
-			throw new Error('Failed to upload file to storage', { cause: error as Error });
+			throw new Error('Failed to upload file to storage', {
+				cause: error as Error,
+			});
 		}
 
 		const name = capitalizeAndRemoveExtension(file.name);
@@ -102,7 +104,9 @@ export class UploadSound {
 		try {
 			key = await this.createKeyForSound(userId, soundId, name);
 		} catch (error) {
-			throw new Error('Failed to create stream deck key', { cause: error as Error });
+			throw new Error('Failed to create stream deck key', {
+				cause: error as Error,
+			});
 		}
 		return { sound, key };
 	}

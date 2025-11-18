@@ -10,6 +10,7 @@ import {
 	type DragEndEvent,
 	KeyboardSensor,
 	PointerSensor,
+	TouchSensor,
 	closestCenter,
 	useSensor,
 	useSensors,
@@ -33,7 +34,10 @@ interface StreamDeckGridProps {
 const SortableItem = ({
 	id,
 	keyData,
-}: { id: string; keyData: StreamDeckKeyRow }) => {
+}: {
+	id: string;
+	keyData: StreamDeckKeyRow;
+}) => {
 	const {
 		attributes,
 		listeners,
@@ -55,6 +59,7 @@ const SortableItem = ({
 		backgroundImage: `linear-gradient(135deg, ${keyData?.color || 'hsl(var(--background))'}, transparent)`,
 		gridColumn: 'span 1',
 		gridRow: 'span 1',
+		touchAction: 'none',
 	};
 
 	const handleClick = () => {
@@ -109,14 +114,19 @@ export const StreamDeckGrid = ({
 		}
 	}, [initialKeys, setStreamDeckKeys]);
 
-	const keysForRender = (streamDeckKeys.length > 0
-		? streamDeckKeys
-		: initialKeys ?? []);
+	const keysForRender =
+		streamDeckKeys.length > 0 ? streamDeckKeys : (initialKeys ?? []);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
 			activationConstraint: {
 				distance: 3,
+			},
+		}),
+		useSensor(TouchSensor, {
+			activationConstraint: {
+				delay: 180,
+				tolerance: 8,
 			},
 		}),
 		useSensor(KeyboardSensor),

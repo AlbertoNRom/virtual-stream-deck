@@ -13,7 +13,7 @@ import {
 } from '@/shared/ui/components/shadcn/card';
 import { Input } from '@/shared/ui/components/shadcn/input';
 import { truncateName } from '@/shared/utils';
-import { Key, Play, Search, Square, Trash2, Upload, User } from 'lucide-react';
+import { Key, Play, Search, Square, Trash2, Upload } from 'lucide-react';
 import { use, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
@@ -201,12 +201,12 @@ export const SoundLibrary = ({
 								: 'Drag & drop audio files here, or click to select files'}
 					</p>
 					<div className="mt-1 sm:mt-2 text-xs text-muted-foreground">
-				<p>
-					Supported formats: MP3, WAV, AAC, M4A, FLAC | Max size: 1MB | Limit:{' '}
-					{sounds.length}/9 sounds
-				</p>
+						<p>
+							Supported formats: MP3, WAV, AAC, M4A, FLAC | Max size: 1MB |
+							Limit: {sounds.length}/9 sounds
+						</p>
+					</div>
 				</div>
-			</div>
 
 				{/* Show warning when user is close to the limit */}
 				{sounds.length >= 7 && sounds.length < 9 && (

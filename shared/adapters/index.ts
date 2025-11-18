@@ -2,7 +2,7 @@ import type { SoundRow, StreamDeckKeyRow } from '@/db/supabase/schema';
 import type { Sound } from '@/features/sounds/domain/entities/Sound';
 import type { StreamDeckKey } from '@/features/streamdeck/domain/entities/StreamDeckKey';
 
-export const soundToUi = (sound: Sound): SoundRow => {
+export const soundToDb = (sound: Sound): SoundRow => {
 	return {
 		id: sound.id,
 		user_id: sound.userId,
@@ -13,7 +13,7 @@ export const soundToUi = (sound: Sound): SoundRow => {
 	};
 };
 
-export const streamDeckKeyToUi = (key: StreamDeckKey): StreamDeckKeyRow => {
+export const streamDeckKeyToDb = (key: StreamDeckKey): StreamDeckKeyRow => {
 	return {
 		id: key.id,
 		user_id: key.userId,

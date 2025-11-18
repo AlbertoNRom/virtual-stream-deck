@@ -22,7 +22,9 @@ export class SupabaseSoundStorage implements SoundStorage {
 			.from('vsd-bucket')
 			.upload(filename, file);
 		if (uploadError)
-			throw new Error('Failed to upload file to storage', { cause: uploadError });
+			throw new Error('Failed to upload file to storage', {
+				cause: uploadError,
+			});
 
 		const {
 			data: { publicUrl },
