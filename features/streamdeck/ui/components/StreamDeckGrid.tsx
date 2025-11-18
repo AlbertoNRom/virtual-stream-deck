@@ -84,7 +84,7 @@ function SortableItem({
 			aria-label={keyData.label || `Key ${keyData.position + 1}`}
 			data-dragging={isDragging}
 		>
-			<span className="text-xs sm:text-sm md:text-base lg:text-lg font-medium">
+			<span className="text-xs sm:text-sm md:text-base lg:text-lg font-medium truncate w-full px-1 leading-tight">
 				{keyData.label || `Key ${keyData.position + 1}`}
 			</span>
 		</button>

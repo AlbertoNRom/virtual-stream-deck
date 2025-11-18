@@ -13,7 +13,7 @@ import {
 } from '@/shared/ui/components/shadcn/card';
 import { Input } from '@/shared/ui/components/shadcn/input';
 import { truncateName } from '@/shared/utils';
-import { Key, Play, Search, Square, Trash2, Upload } from 'lucide-react';
+import { Key, Play, Search, Square, Trash2, Upload, User } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
@@ -73,9 +73,15 @@ export function SoundLibrary() {
 	useEffect(() => {
 		const loadSounds = async () => {
 			const supabase = createClient();
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+
 			const { data, error } = await supabase
 				.from('sounds')
 				.select('*')
+				// biome-ignore lint/style/noNonNullAssertion: has user id
+				.eq('user_id', user!.id)
 				.order('created_at', { ascending: false });
 
 			if (error) {
@@ -83,7 +89,7 @@ export function SoundLibrary() {
 				return;
 			}
 
-			setSounds(data);
+			setSounds(data ?? []);
 		};
 
 		loadSounds();
