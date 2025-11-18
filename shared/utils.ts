@@ -1,9 +1,14 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-export function cn(...inputs: ClassValue[]) {
+/**
+ * Combines multiple class values into a single string, merging Tailwind CSS classes
+ * @param inputs - The class values to combine
+ * @returns The merged class string
+ */
+export const cn = (...inputs: ClassValue[]) => {
 	return twMerge(clsx(inputs));
-}
+};
 
 /**
  * Removes the file extension from a filename
@@ -35,7 +40,12 @@ export const capitalizeAndRemoveExtension = (fileName: string): string => {
 	return capitalizeFirst(nameWithoutExtension);
 };
 
-// Function to truncate long sound names
+/**
+ * Truncates a string to a specified length, adding ellipsis if truncated
+ * @param name - The string to truncate
+ * @param maxLength - The maximum length of the string (default: 20)
+ * @returns The truncated string with ellipsis if needed
+ */
 export const truncateName = (name: string, maxLength = 20) => {
 	if (name.length <= maxLength) return name;
 	return `${name.substring(0, maxLength)}...`;

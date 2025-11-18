@@ -3,7 +3,7 @@
 import { createClient } from '@/db/supabase/client';
 import { Button } from '@/shared/ui/components/shadcn/button';
 
-export function AuthButton() {
+export const AuthButton = () => {
 	const supabase = createClient();
 
 	const handleSignIn = async () => {
@@ -29,4 +29,4 @@ export function AuthButton() {
 			Sign in with Google
 		</Button>
 	);
-}
+};

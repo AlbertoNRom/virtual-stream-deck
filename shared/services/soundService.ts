@@ -5,7 +5,7 @@ import { SupabaseSoundStorage } from '@/features/sounds/infra/supabase/SupabaseS
 import { EnsureStreamDeckKeyForSound } from '@/features/streamdeck/application/EnsureStreamDeckKeyForSound';
 import { SupabaseStreamDeckKeyRepository } from '@/features/streamdeck/infra/supabase/SupabaseStreamDeckKeyRepository';
 
-export function createSoundService() {
+export const createSoundService = () => {
 	const repo = new SupabaseSoundRepository();
 	const keys = new SupabaseStreamDeckKeyRepository();
 	const storage = new SupabaseSoundStorage();
@@ -15,4 +15,4 @@ export function createSoundService() {
 		removeSound: new RemoveSound(repo, keys, storage),
 		ensureKeyForSound: new EnsureStreamDeckKeyForSound(repo, keys),
 	};
-}
+};

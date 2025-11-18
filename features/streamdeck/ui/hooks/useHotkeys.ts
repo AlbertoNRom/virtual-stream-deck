@@ -5,7 +5,6 @@ import { useSoundStore } from '@/shared/store';
 import { useCallback, useMemo, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
-// Function to normalize a hotkey
 const normalizeHotkey = (hotkey: string): string => {
 	if (!hotkey) return '';
 	return hotkey.toLowerCase().trim();
@@ -17,7 +16,6 @@ export const useStreamDeckHotkeys = () => {
 		Array<{ hotkey: string; soundId: string }>
 	>([]);
 
-	// TODO: Function to handle hotkey activation
 	const handleHotkeyActivation = useCallback(
 		(soundId: string, _hotkey: string) => {
 			playSound(soundId);

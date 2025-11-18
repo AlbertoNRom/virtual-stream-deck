@@ -11,7 +11,7 @@ const supabase = createClient(
 	env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY,
 );
 
-async function fileExistsInStorage(filePath: string): Promise<boolean> {
+const fileExistsInStorage = async (filePath: string): Promise<boolean> => {
 	try {
 		const { data, error } = await supabase.storage
 			.from('vsd-bucket')
@@ -27,12 +27,12 @@ async function fileExistsInStorage(filePath: string): Promise<boolean> {
 	} catch (_error) {
 		return false;
 	}
-}
+};
 
-async function uploadSharedSound(
+const uploadSharedSound = async (
 	soundId: string,
 	localPath: string,
-): Promise<string> {
+): Promise<string> => {
 	try {
 		const fileBuffer = fs.readFileSync(localPath);
 
@@ -75,7 +75,7 @@ async function uploadSharedSound(
 		console.error(`Error uploading shared sound ${soundId}:`, error);
 		throw error;
 	}
-}
+};
 
 export default async function handler(
 	req: NextApiRequest,

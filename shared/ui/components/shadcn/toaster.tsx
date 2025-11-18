@@ -10,7 +10,7 @@ import {
 } from '@/shared/ui/components/shadcn/toast';
 import { useToast } from '@/shared/ui/hooks/use-toast';
 
-export function Toaster() {
+export const Toaster = () => {
 	const { toasts } = useToast();
 
 	return (
@@ -28,4 +28,4 @@ export function Toaster() {
 			<ToastViewport />
 		</ToastProvider>
 	);
-}
+};

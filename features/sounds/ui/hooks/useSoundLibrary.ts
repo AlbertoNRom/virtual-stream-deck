@@ -15,7 +15,7 @@ export type SoundLibraryState = {
 	isRemoving: boolean;
 };
 
-export function useSoundLibrary() {
+export const useSoundLibrary = () => {
 	const supabase = useMemo(() => createClient(), []);
 	const soundService = useMemo(() => {
 		const soundRepo = new SupabaseSoundRepository();
@@ -177,4 +177,4 @@ export function useSoundLibrary() {
 		updateKey,
 		ensureKeyForSound,
 	};
-}
+};

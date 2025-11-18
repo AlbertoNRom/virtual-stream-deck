@@ -47,7 +47,7 @@ describe('useKeyConfig', () => {
 		let capturedState: KeyConfigState = { config: selectedKey, sounds };
 		let capturedEvents: KeyConfigEvents | null = null;
 
-		function Harness() {
+		const Harness = () => {
 			const [state, events] = useKeyConfig(selectedKey, sounds, {
 				updateKey: updateKeyMock,
 			});
@@ -56,7 +56,7 @@ describe('useKeyConfig', () => {
 				capturedEvents = events;
 			}, [state, events]);
 			return null;
-		}
+		};
 
 		render(<Harness />);
 
@@ -86,7 +86,7 @@ describe('useKeyConfig', () => {
 		let _capturedState: KeyConfigState = { config: selectedKey, sounds };
 		let capturedEvents: KeyConfigEvents | null = null;
 
-		function Harness() {
+		const Harness = () => {
 			const [state, events] = useKeyConfig(selectedKey, sounds, {
 				updateKey: updateKeyMock,
 			});
@@ -95,7 +95,7 @@ describe('useKeyConfig', () => {
 				capturedEvents = events;
 			}, [state, events]);
 			return null;
-		}
+		};
 
 		render(<Harness />);
 
