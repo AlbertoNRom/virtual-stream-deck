@@ -173,7 +173,7 @@ describe('UploadSound Service', () => {
 					userId: 'user-1',
 					file: mockFile,
 				}),
-			).rejects.toThrow('El archivo es demasiado grande. Máximo 2MB');
+      ).rejects.toThrow('El archivo es demasiado grande. Máximo 1MB');
 		});
 
 		it('should throw error when user has reached sound limit', async () => {

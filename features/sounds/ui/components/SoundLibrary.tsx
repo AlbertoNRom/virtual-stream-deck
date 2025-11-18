@@ -44,7 +44,16 @@ export const SoundLibrary = ({
 		accept: {
 			'audio/*': ['.mp3', '.wav', '.aac', '.m4a', '.flac'],
 		},
-		onDrop: async (acceptedFiles) => {
+		maxSize: 1 * 1024 * 1024,
+		onDrop: async (acceptedFiles, fileRejections) => {
+			if (fileRejections && fileRejections.length > 0) {
+				const tooLarge = fileRejections.some((r) =>
+					r.errors.some((e) => e.code === 'file-too-large'),
+				);
+				if (tooLarge) {
+					toast.error('El archivo es demasiado grande. Máximo 1MB');
+				}
+			}
 			if (sounds.length >= 9) {
 				toast.error(
 					'You have reached the limit of 9 sounds. Delete some to add more.',
@@ -192,10 +201,10 @@ export const SoundLibrary = ({
 								: 'Drag & drop audio files here, or click to select files'}
 					</p>
 					<div className="mt-1 sm:mt-2 text-xs text-muted-foreground">
-					<p>
-						Supported formats: MP3, WAV, AAC, M4A, FLAC | Max size: 5MB | Limit:{' '}
-						{sounds.length}/9 sounds
-					</p>
+				<p>
+					Supported formats: MP3, WAV, AAC, M4A, FLAC | Max size: 1MB | Limit:{' '}
+					{sounds.length}/9 sounds
+				</p>
 				</div>
 			</div>
 

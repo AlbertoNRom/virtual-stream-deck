@@ -219,7 +219,7 @@ describe('SoundLibrary', () => {
 		).toBeInTheDocument();
     expect(
       screen.getByText(
-        /Supported formats: MP3, WAV, AAC, M4A, FLAC \| Max size: 5MB \| Limit: \d+\/9 sounds/,
+        /Supported formats: MP3, WAV, AAC, M4A, FLAC \| Max size: 1MB \| Limit: \d+\/9 sounds/,
       ),
     ).toBeInTheDocument();
 	});

@@ -7,7 +7,7 @@ import type { SoundRepository } from '../domain/ports/SoundRepository';
 import type { SoundStorage } from '../domain/ports/SoundStorage';
 
 const MAX_SOUNDS_PER_USER = 9;
-const MAX_SOUND_SIZE_MB = 2;
+const MAX_SOUND_SIZE_MB = 1;
 const MAX_SOUND_SIZE_BYTES = MAX_SOUND_SIZE_MB * 1024 * 1024;
 
 export class UploadSound {
