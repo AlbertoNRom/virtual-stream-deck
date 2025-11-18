@@ -50,3 +50,11 @@ export const truncateName = (name: string, maxLength = 20) => {
 	if (name.length <= maxLength) return name;
 	return `${name.substring(0, maxLength)}...`;
 };
+
+export const getAudioFormatFromUrl = (url: string): string | undefined => {
+  const clean = url.split('?')[0].split('#')[0];
+  const ext = clean.split('.').pop()?.toLowerCase();
+  if (!ext) return undefined;
+  if (ext === 'm4a') return 'aac';
+  return ext;
+};

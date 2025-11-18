@@ -217,11 +217,11 @@ describe('SoundLibrary', () => {
 				'Drag & drop audio files here, or click to select files',
 			),
 		).toBeInTheDocument();
-		expect(
-			screen.getByText(
-				/Supported formats: MP3, WAV \| Max size: 5MB \| Limit: \d+\/9 sounds/,
-			),
-		).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /Supported formats: MP3, WAV, AAC, M4A, FLAC \| Max size: 5MB \| Limit: \d+\/9 sounds/,
+      ),
+    ).toBeInTheDocument();
 	});
 
 	it('should display sound limit warning when approaching limit', () => {

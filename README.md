@@ -328,9 +328,9 @@ npx tsc --noEmit
 
 - MP3
 - WAV
-- OGG (soon)
-- M4A (soon)
-- FLAC (soon)
+- AAC
+- M4A
+- FLAC
 
 ### Keyboard Shortcuts
 

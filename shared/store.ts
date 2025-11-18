@@ -2,6 +2,7 @@
 
 import type { SoundRow, StreamDeckKeyRow } from '@/db/supabase/schema';
 import { Howl } from 'howler';
+import { getAudioFormatFromUrl } from './utils';
 import { create } from 'zustand';
 
 type GridConfig = { rows: number; columns: number };
@@ -39,32 +40,36 @@ export const useSoundStore = create<SoundStore>((set, get) => ({
 		currentInstances.forEach((instance) => instance.unload());
 
 		// Create new instances for the new sounds
-		const newInstances = new Map<string, Howl>();
-		sounds.forEach((sound) => {
-			newInstances.set(
-				sound.id,
-				new Howl({
-					src: [sound.url],
-					html5: true,
-					preload: true, // Consider preloading for better performance
-					onloaderror: (_id, error) => {
-						console.error('Failed to load sound:', sound.id, error);
-					},
-				}),
-			);
-		});
+    const newInstances = new Map<string, Howl>();
+    sounds.forEach((sound) => {
+      const fmt = getAudioFormatFromUrl(sound.url);
+      newInstances.set(
+        sound.id,
+        new Howl({
+          src: [sound.url],
+          html5: true,
+          preload: true, // Consider preloading for better performance
+          format: fmt ? [fmt] : undefined,
+          onloaderror: (_id, error) => {
+            console.error('Failed to load sound:', sound.id, error);
+          },
+        }),
+      );
+    });
 
 		set({ sounds, audioInstances: newInstances });
 	},
 
 	addSound: (sound) => {
-		const audioInstance = new Howl({
-			src: [sound.url],
-			html5: true,
-			onloaderror: (_id, error) => {
-				console.error('Failed to load sound:', sound.id, error);
-			},
-		});
+    const fmt = getAudioFormatFromUrl(sound.url);
+    const audioInstance = new Howl({
+      src: [sound.url],
+      html5: true,
+      format: fmt ? [fmt] : undefined,
+      onloaderror: (_id, error) => {
+        console.error('Failed to load sound:', sound.id, error);
+      },
+    });
 
 		set((state) => ({
 			sounds: [...state.sounds, sound],

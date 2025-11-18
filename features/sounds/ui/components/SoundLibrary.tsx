@@ -42,7 +42,7 @@ export const SoundLibrary = ({
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		accept: {
-			'audio/*': ['.mp3', '.wav'],
+			'audio/*': ['.mp3', '.wav', '.aac', '.m4a', '.flac'],
 		},
 		onDrop: async (acceptedFiles) => {
 			if (sounds.length >= 9) {
@@ -192,12 +192,12 @@ export const SoundLibrary = ({
 								: 'Drag & drop audio files here, or click to select files'}
 					</p>
 					<div className="mt-1 sm:mt-2 text-xs text-muted-foreground">
-						<p>
-							Supported formats: MP3, WAV | Max size: 5MB | Limit:{' '}
-							{sounds.length}/9 sounds
-						</p>
-					</div>
+					<p>
+						Supported formats: MP3, WAV, AAC, M4A, FLAC | Max size: 5MB | Limit:{' '}
+						{sounds.length}/9 sounds
+					</p>
 				</div>
+			</div>
 
 				{/* Show warning when user is close to the limit */}
 				{sounds.length >= 7 && sounds.length < 9 && (
