@@ -57,7 +57,9 @@ const uploadSharedSound = async (
 				.upload(storagePath, file);
 
 			if (uploadError) {
-				throw uploadError;
+				throw new Error('Failed to upload shared sound to storage', {
+					cause: uploadError,
+				});
 			}
 		}
 
@@ -67,7 +69,9 @@ const uploadSharedSound = async (
 		} = supabase.storage.from('vsd-bucket').getPublicUrl(storagePath);
 
 		if (!publicUrl) {
-			throw new Error('Failed to get public URL');
+			throw new Error('Failed to get public URL from storage', {
+				cause: new Error('No public URL returned'),
+			});
 		}
 
 		return publicUrl;
@@ -163,12 +167,15 @@ export default async function handler(
 		];
 
 		if (soundsToInsert.length > 0) {
-			const { error: soundError } = await supabase
-				.from('sounds')
-				.insert(soundsToInsert)
-				.select();
+		const { error: soundError } = await supabase
+			.from('sounds')
+			.insert(soundsToInsert)
+			.select();
 
-			if (soundError) throw soundError;
+			if (soundError)
+				throw new Error('Failed to insert example sounds', {
+					cause: soundError,
+				});
 		}
 
 		const keysToInsert = [
@@ -205,12 +212,15 @@ export default async function handler(
 		];
 
 		if (keysToInsert.length > 0) {
-			const { error: keyError } = await supabase
-				.from('stream_deck_keys')
-				.insert(keysToInsert)
-				.select();
+		const { error: keyError } = await supabase
+			.from('stream_deck_keys')
+			.insert(keysToInsert)
+			.select();
 
-			if (keyError) throw keyError;
+			if (keyError)
+				throw new Error('Failed to insert stream deck keys', {
+					cause: keyError,
+				});
 		}
 
 		return res.status(200).json({

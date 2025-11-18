@@ -33,30 +33,44 @@ export const useSoundLibrary = () => {
 
 	const refreshKeys = useCallback(
 		async (userId?: string) => {
-			const uid = userId ?? '';
-			const { setStreamDeckKeys } = useSoundStore.getState();
-			const { data: keysData, error: keysError } = await supabase
-				.from('stream_deck_keys')
-				.select('*')
-				.eq('user_id', uid)
-				.order('position', { ascending: true });
-			if (keysError) throw keysError;
-			setStreamDeckKeys(keysData ?? []);
+			try {
+				const uid = userId ?? '';
+				const { setStreamDeckKeys } = useSoundStore.getState();
+				const { data: keysData, error: keysError } = await supabase
+					.from('stream_deck_keys')
+					.select('*')
+					.eq('user_id', uid)
+					.order('position', { ascending: true });
+				if (keysError)
+					throw new Error('Failed to fetch stream deck keys', {
+						cause: keysError,
+					});
+				setStreamDeckKeys(keysData ?? []);
+			} catch (error) {
+				throw new Error('Failed to refresh stream deck keys', {
+					cause: error as Error,
+				});
+			}
 		},
 		[supabase],
 	);
 
 	const refreshSounds = useCallback(
 		async (userId?: string) => {
-			const uid = userId ?? '';
-			const { setSounds } = useSoundStore.getState();
-			const { data, error } = await supabase
-				.from('sounds')
-				.select('*')
-				.eq('user_id', uid)
-				.order('created_at', { ascending: false });
-			if (error) throw error;
-			setSounds(data ?? []);
+			try {
+				const uid = userId ?? '';
+				const { setSounds } = useSoundStore.getState();
+				const { data, error } = await supabase
+					.from('sounds')
+					.select('*')
+					.eq('user_id', uid)
+					.order('created_at', { ascending: false });
+				if (error)
+					throw new Error('Failed to fetch sounds', { cause: error });
+				setSounds(data ?? []);
+			} catch (error) {
+				throw new Error('Failed to refresh sounds', { cause: error as Error });
+			}
 		},
 		[supabase],
 	);
@@ -120,7 +134,8 @@ export const useSoundLibrary = () => {
 			const { error } = await supabase
 				.from('stream_deck_keys')
 				.upsert(updatedKeys);
-			if (error) throw error;
+			if (error)
+				throw new Error('Failed to save key positions', { cause: error });
 			const { setStreamDeckKeys } = useSoundStore.getState();
 			setStreamDeckKeys(updatedKeys);
 		},
@@ -133,7 +148,8 @@ export const useSoundLibrary = () => {
 				.from('stream_deck_keys')
 				.update(updatedKey)
 				.eq('id', updatedKey.id);
-			if (error) throw error;
+			if (error)
+				throw new Error('Failed to update key', { cause: error });
 
 			const store = (useSoundStore.getState?.() ?? useSoundStore()) as {
 				updateKey?: (k: StreamDeckKeyRow) => void;
@@ -157,7 +173,13 @@ export const useSoundLibrary = () => {
 			}
 			if (!userId) return null;
 
-			await soundService.ensureKeyForSound.execute({ soundId, userId });
+			try {
+				await soundService.ensureKeyForSound.execute({ soundId, userId });
+			} catch (error) {
+				throw new Error('Failed to ensure key for sound', {
+					cause: error as Error,
+				});
+			}
 			await refreshKeys(userId);
 
 			const { streamDeckKeys } = useSoundStore.getState();

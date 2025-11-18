@@ -21,13 +21,17 @@ export class SupabaseSoundStorage implements SoundStorage {
 		const { error: uploadError } = await this.supabase.storage
 			.from('vsd-bucket')
 			.upload(filename, file);
-		if (uploadError) throw uploadError;
+		if (uploadError)
+			throw new Error('Failed to upload file to storage', { cause: uploadError });
 
 		const {
 			data: { publicUrl },
 		} = this.supabase.storage.from('vsd-bucket').getPublicUrl(filename);
 
-		if (!publicUrl) throw new Error('No public URL returned by storage');
+		if (!publicUrl)
+			throw new Error('Failed to get public URL from storage', {
+				cause: new Error('No public URL returned by storage'),
+			});
 		return publicUrl;
 	}
 }

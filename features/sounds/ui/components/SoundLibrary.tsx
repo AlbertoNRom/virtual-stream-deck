@@ -51,7 +51,7 @@ export const SoundLibrary = ({
 					r.errors.some((e) => e.code === 'file-too-large'),
 				);
 				if (tooLarge) {
-					toast.error('El archivo es demasiado grande. Máximo 1MB');
+					toast.error('File is too large. Maximum 1MB');
 				}
 			}
 			if (sounds.length >= 9) {
@@ -66,7 +66,7 @@ export const SoundLibrary = ({
 
 			if (acceptedFiles.length > remainingSlots) {
 				toast.warning(
-					`Solo se cargarán ${remainingSlots} de ${acceptedFiles.length} sonidos debido al límite.`,
+					`Only ${remainingSlots} of ${acceptedFiles.length} files will be uploaded due to the limit.`,
 				);
 			}
 

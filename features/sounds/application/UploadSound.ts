@@ -52,22 +52,32 @@ export class UploadSound {
 
 		if (file.size > MAX_SOUND_SIZE_BYTES) {
 			throw new Error(
-				`El archivo es demasiado grande. Máximo ${MAX_SOUND_SIZE_MB}MB`,
+				`File is too large. Maximum ${MAX_SOUND_SIZE_MB}MB`,
 			);
 		}
 
-		const existingSounds = await this.sounds.listByUser(userId);
+		let existingSounds: Sound[] = [];
+		try {
+			existingSounds = await this.sounds.listByUser(userId);
+		} catch (error) {
+			throw new Error('Failed to list sounds for user', { cause: error as Error });
+		}
 		if (existingSounds.length >= MAX_SOUNDS_PER_USER) {
 			throw new Error(
-				`Has alcanzado el límite de ${MAX_SOUNDS_PER_USER} sonidos`,
+				`You have reached the limit of ${MAX_SOUNDS_PER_USER} sounds`,
 			);
 		}
 
 		if (!this.storage) {
-			throw new Error('Storage no disponible para subir el archivo');
+			throw new Error('Storage not available to upload the file');
 		}
 
-		const publicUrl = await this.storage.uploadAndGetPublicUrl(userId, file);
+		let publicUrl: string;
+		try {
+			publicUrl = await this.storage.uploadAndGetPublicUrl(userId, file);
+		} catch (error) {
+			throw new Error('Failed to upload file to storage', { cause: error as Error });
+		}
 
 		const name = capitalizeAndRemoveExtension(file.name);
 		const duration = await this.getDuration(publicUrl);
@@ -83,8 +93,17 @@ export class UploadSound {
 			duration,
 		});
 
-		await this.sounds.add(sound);
-		const key = await this.createKeyForSound(userId, soundId, name);
+		try {
+			await this.sounds.add(sound);
+		} catch (error) {
+			throw new Error('Failed to persist sound', { cause: error as Error });
+		}
+		let key: StreamDeckKey;
+		try {
+			key = await this.createKeyForSound(userId, soundId, name);
+		} catch (error) {
+			throw new Error('Failed to create stream deck key', { cause: error as Error });
+		}
 		return { sound, key };
 	}
 
