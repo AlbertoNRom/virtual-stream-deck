@@ -109,6 +109,10 @@ export const StreamDeckGrid = ({
 		}
 	}, [initialKeys, setStreamDeckKeys]);
 
+	const keysForRender = (streamDeckKeys.length > 0
+		? streamDeckKeys
+		: initialKeys ?? []);
+
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
 			activationConstraint: {
@@ -160,9 +164,7 @@ export const StreamDeckGrid = ({
 			onDragEnd={handleDragEnd}
 		>
 			<SortableContext
-				items={(initialKeys ?? streamDeckKeys).map(
-					(item) => `key-${item.position}`,
-				)}
+				items={keysForRender.map((item) => `key-${item.position}`)}
 				strategy={rectSortingStrategy}
 			>
 				<div
@@ -172,12 +174,12 @@ export const StreamDeckGrid = ({
 						gridTemplateColumns: `repeat(${config.columns}, minmax(0, 1fr))`,
 					}}
 				>
-					{(initialKeys ?? streamDeckKeys).length === 0 ? (
+					{keysForRender.length === 0 ? (
 						<div className="col-span-full text-center text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground">
 							No keys configured. Click to add new keys.
 						</div>
 					) : (
-						(initialKeys ?? streamDeckKeys).map((item) => (
+						keysForRender.map((item) => (
 							<SortableItem
 								key={`key-${item.position}`}
 								id={`key-${item.position}`}
