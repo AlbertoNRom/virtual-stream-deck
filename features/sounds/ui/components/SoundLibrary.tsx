@@ -1,6 +1,6 @@
 'use client';
 
-import { createClient } from '@/db/supabase/client';
+import type { SoundRow } from '@/db/supabase/schema';
 import { useSoundLibrary } from '@/features/sounds/ui/hooks/useSoundLibrary';
 import { useSoundStore } from '@/shared/store';
 import { Button } from '@/shared/ui/components/shadcn/button';
@@ -14,11 +14,15 @@ import {
 import { Input } from '@/shared/ui/components/shadcn/input';
 import { truncateName } from '@/shared/utils';
 import { Key, Play, Search, Square, Trash2, Upload, User } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { toast } from 'sonner';
 
-export function SoundLibrary() {
+export const SoundLibrary = ({
+	initialSoundsPromise,
+}: {
+	initialSoundsPromise?: Promise<SoundRow[]>;
+}) => {
 	const [search, setSearch] = useState('');
 	const {
 		sounds,
@@ -70,30 +74,12 @@ export function SoundLibrary() {
 		disabled: sounds.length >= 9,
 	});
 
+	const initialSounds = initialSoundsPromise ? use(initialSoundsPromise) : null;
 	useEffect(() => {
-		const loadSounds = async () => {
-			const supabase = createClient();
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-
-			const { data, error } = await supabase
-				.from('sounds')
-				.select('*')
-				// biome-ignore lint/style/noNonNullAssertion: has user id
-				.eq('user_id', user!.id)
-				.order('created_at', { ascending: false });
-
-			if (error) {
-				toast.error('Failed to load sounds');
-				return;
-			}
-
-			setSounds(data ?? []);
-		};
-
-		loadSounds();
-	}, [setSounds]);
+		if (initialSounds) {
+			setSounds(initialSounds);
+		}
+	}, [initialSounds, setSounds]);
 
 	const filteredSounds = sounds.filter((sound) =>
 		sound.name.toLowerCase().includes(search.toLowerCase()),
@@ -293,4 +279,4 @@ export function SoundLibrary() {
 			</CardContent>
 		</Card>
 	);
-}
+};

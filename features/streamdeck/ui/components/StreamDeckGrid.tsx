@@ -21,18 +21,19 @@ import {
 	useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useEffect } from 'react';
+import { use, useEffect } from 'react';
 import { toast } from 'sonner';
 
 type GridConfig = { rows: number; columns: number };
 interface StreamDeckGridProps {
 	config: GridConfig;
+	initialKeysPromise?: Promise<StreamDeckKeyRow[]>;
 }
 
-function SortableItem({
+const SortableItem = ({
 	id,
 	keyData,
-}: { id: string; keyData: StreamDeckKeyRow }) {
+}: { id: string; keyData: StreamDeckKeyRow }) => {
 	const {
 		attributes,
 		listeners,
@@ -89,20 +90,24 @@ function SortableItem({
 			</span>
 		</button>
 	);
-}
+};
 
-export const StreamDeckGrid = ({ config }: StreamDeckGridProps) => {
-	const { streamDeckKeys } = useSoundStore();
+export const StreamDeckGrid = ({
+	config,
+	initialKeysPromise,
+}: StreamDeckGridProps) => {
+	const { streamDeckKeys, setStreamDeckKeys } = useSoundStore();
 
-	const { loadInitialKeys, reorderKeys } = useSoundLibrary();
+	const { reorderKeys } = useSoundLibrary();
 
 	useStreamDeckHotkeys();
 
+	const initialKeys = initialKeysPromise ? use(initialKeysPromise) : null;
 	useEffect(() => {
-		loadInitialKeys().catch(() => {
-			toast.error('Failed to load stream deck configuration');
-		});
-	}, [loadInitialKeys]);
+		if (initialKeys) {
+			setStreamDeckKeys(initialKeys);
+		}
+	}, [initialKeys, setStreamDeckKeys]);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
@@ -155,7 +160,9 @@ export const StreamDeckGrid = ({ config }: StreamDeckGridProps) => {
 			onDragEnd={handleDragEnd}
 		>
 			<SortableContext
-				items={streamDeckKeys.map((item) => `key-${item.position}`)}
+				items={(initialKeys ?? streamDeckKeys).map(
+					(item) => `key-${item.position}`,
+				)}
 				strategy={rectSortingStrategy}
 			>
 				<div
@@ -165,12 +172,12 @@ export const StreamDeckGrid = ({ config }: StreamDeckGridProps) => {
 						gridTemplateColumns: `repeat(${config.columns}, minmax(0, 1fr))`,
 					}}
 				>
-					{streamDeckKeys.length === 0 ? (
+					{(initialKeys ?? streamDeckKeys).length === 0 ? (
 						<div className="col-span-full text-center text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground">
 							No keys configured. Click to add new keys.
 						</div>
 					) : (
-						streamDeckKeys.map((item) => (
+						(initialKeys ?? streamDeckKeys).map((item) => (
 							<SortableItem
 								key={`key-${item.position}`}
 								id={`key-${item.position}`}

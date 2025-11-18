@@ -21,7 +21,7 @@ import {
 } from '@/shared/ui/components/shadcn/select';
 import { toast } from 'sonner';
 
-export function KeyConfig() {
+export const KeyConfig = () => {
 	const { sounds, updateKey, selectedKey } = useSoundStore();
 	const [state, events] = useKeyConfig(selectedKey, sounds, { updateKey });
 	const { config } = state;
@@ -128,4 +128,4 @@ export function KeyConfig() {
 			</CardContent>
 		</Card>
 	);
-}
+};
