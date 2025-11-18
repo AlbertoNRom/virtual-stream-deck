@@ -2,7 +2,7 @@
 
 import type { StreamDeckKeyRow } from '@/db/supabase/schema';
 import { useSoundLibrary } from '@/features/sounds/ui/hooks/useSoundLibrary';
-import { useStreamDeckHotkeys } from '@/features/streamdeck/ui/hooks/useHotkeys';
+import { useStreamDeckHotkeys } from '@/features/streamdeck/ui/hooks/useStreamDeckHotkeys';
 import { useSoundStore } from '@/shared/store';
 import { cn } from '@/shared/utils';
 import {
