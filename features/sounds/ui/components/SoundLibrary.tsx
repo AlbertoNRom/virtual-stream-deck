@@ -12,6 +12,7 @@ import {
 	CardTitle,
 } from '@/shared/ui/components/shadcn/card';
 import { Input } from '@/shared/ui/components/shadcn/input';
+import { Label } from '@/shared/ui/components/shadcn/label';
 import { truncateName } from '@/shared/utils';
 import { Key, Play, Search, Square, Trash2, Upload } from 'lucide-react';
 import { use, useEffect, useState } from 'react';
@@ -159,11 +160,16 @@ export const SoundLibrary = ({
 							className="absolute left-2 h-4 w-4 text-muted-foreground"
 							style={{ marginTop: '12px' }}
 						/>
+						<Label htmlFor="sound-search" className="sr-only">
+							Search sounds
+						</Label>
 						<Input
+							id="sound-search"
 							placeholder="Search sounds..."
 							value={search}
 							onChange={(e) => setSearch(e.target.value)}
 							className="pl-8 text-sm sm:text-base"
+							aria-label="Search sounds"
 						/>
 					</div>
 					<Button
@@ -178,6 +184,7 @@ export const SoundLibrary = ({
 							}
 						}}
 						disabled={sounds.length >= 9}
+						aria-label="Upload audio files"
 					>
 						<Upload className="h-4 w-4 mr-2" />
 						<span className="hidden sm:inline">Upload</span>
@@ -191,9 +198,17 @@ export const SoundLibrary = ({
 						isDragActive ? 'border-primary bg-primary/10' : 'border-muted'
 					} ${sounds.length >= 9 ? 'opacity-50 cursor-not-allowed' : ''}`}
 				>
-					<input {...getInputProps()} />
+					<input
+						{...getInputProps({
+							'aria-label': 'Upload audio files',
+							'aria-describedby': 'upload-instructions',
+						})}
+					/>
 					<Upload className="h-6 w-6 sm:h-8 sm:w-8 mx-auto mb-2 sm:mb-4 text-muted-foreground" />
-					<p className="text-xs sm:text-sm text-muted-foreground">
+					<p
+						id="upload-instructions"
+						className="text-xs sm:text-sm text-muted-foreground"
+					>
 						{isUploading
 							? 'Uploading...'
 							: sounds.length >= 9
@@ -250,6 +265,12 @@ export const SoundLibrary = ({
 									size="icon"
 									onClick={() => handlePlay(sound.id)}
 									className="h-8 w-8 sm:h-10 sm:w-10"
+									aria-label={
+										currentlyPlayingId === sound.id
+											? 'Stop sound'
+											: 'Play sound'
+									}
+									aria-pressed={currentlyPlayingId === sound.id}
 								>
 									{currentlyPlayingId === sound.id ? (
 										<Square className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -268,7 +289,12 @@ export const SoundLibrary = ({
                     ${selectedSoundId === sound.id ? 'bg-primary/20 text-primary ring-1 ring-primary' : ''}
                   `}
 									onClick={() => handleSelectSound(sound.id)}
-									title="Select to configure key"
+									aria-label={
+										selectedSoundId === sound.id
+											? 'Cancel key configuration'
+											: 'Configure key'
+									}
+									aria-pressed={selectedSoundId === sound.id}
 								>
 									<Key className="h-3 w-3 sm:h-4 sm:w-4" />
 								</Button>
@@ -278,6 +304,7 @@ export const SoundLibrary = ({
 									onClick={() => handleDelete(sound.id)}
 									disabled={isRemoving}
 									className="h-8 w-8 sm:h-10 sm:w-10"
+									aria-label="Delete sound"
 								>
 									<Trash2 className="h-3 w-3 sm:h-4 sm:w-4" />
 								</Button>
