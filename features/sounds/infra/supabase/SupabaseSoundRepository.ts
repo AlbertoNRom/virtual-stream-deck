@@ -1,6 +1,6 @@
 import { createClient } from '@/db/supabase/client';
-import type { Sound, SoundId, UserId } from '../../domain/entities/Sound';
-import { Sound as DomainSound } from '../../domain/entities/Sound';
+import type { SoundId, UserId } from '../../domain/entities/Sound';
+import { Sound } from '../../domain/entities/Sound';
 import type { SoundRepository } from '../../domain/ports/SoundRepository';
 
 export class SupabaseSoundRepository implements SoundRepository {
@@ -13,7 +13,7 @@ export class SupabaseSoundRepository implements SoundRepository {
 			.eq('id', id)
 			.single();
 		if (error || !data) return null;
-		return DomainSound.create({
+		return Sound.create({
 			id: data.id,
 			userId: data.user_id,
 			name: data.name,
@@ -29,7 +29,7 @@ export class SupabaseSoundRepository implements SoundRepository {
 			.select('id,user_id,name,url,duration,created_at')
 			.eq('user_id', userId);
 		return (data ?? []).map((d) =>
-			DomainSound.create({
+			Sound.create({
 				id: d.id,
 				userId: d.user_id,
 				name: d.name,
@@ -41,7 +41,7 @@ export class SupabaseSoundRepository implements SoundRepository {
 	}
 
 	async add(sound: Sound): Promise<void> {
-		const entity = sound as DomainSound;
+		const entity = sound as Sound;
 		const dto = {
 			id: entity.id,
 			user_id: entity.userId,

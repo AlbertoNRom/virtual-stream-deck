@@ -1,7 +1,6 @@
 import { createClient } from '@/db/supabase/client';
 import type { SoundId, UserId } from '../../../sounds/domain/entities/Sound';
-import type { StreamDeckKey } from '../../domain/entities/StreamDeckKey';
-import { StreamDeckKey as DomainStreamDeckKey } from '../../domain/entities/StreamDeckKey';
+import { StreamDeckKey } from '../../domain/entities/StreamDeckKey';
 import type { StreamDeckKeyRepository } from '../../domain/ports/StreamDeckKeyRepository';
 
 export class SupabaseStreamDeckKeyRepository
@@ -15,7 +14,7 @@ export class SupabaseStreamDeckKeyRepository
 			.select('id,user_id,sound_id,position,label,color,icon,hotkey,created_at')
 			.eq('user_id', userId);
 		return (data ?? []).map((d) =>
-			DomainStreamDeckKey.create({
+			StreamDeckKey.create({
 				id: d.id,
 				userId: d.user_id,
 				soundId: d.sound_id ?? null,
@@ -30,7 +29,7 @@ export class SupabaseStreamDeckKeyRepository
 	}
 
 	async add(key: StreamDeckKey): Promise<void> {
-		const entity = key as DomainStreamDeckKey;
+		const entity = key as StreamDeckKey;
 		const dto = {
 			id: entity.id,
 			user_id: entity.userId,
