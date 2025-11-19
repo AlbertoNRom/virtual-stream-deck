@@ -100,6 +100,7 @@ export default async function Dashboard() {
 									<div className="h-4 w-48 bg-muted rounded" />
 									<div className="mt-4 space-y-2">
 										{Array.from({ length: 6 }).map((_, i) => (
+											// biome-ignore lint/suspicious/noArrayIndexKey: not a problem for this use case
 											<div key={i} className="p-3 rounded-lg bg-muted/40">
 												<div className="h-4 w-full bg-muted rounded" />
 											</div>
@@ -123,6 +124,7 @@ export default async function Dashboard() {
 									>
 										{Array.from({ length: 9 }).map((_, i) => (
 											<div
+												// biome-ignore lint/suspicious/noArrayIndexKey: not a problem for this use case
 												key={i}
 												className="aspect-square rounded-md bg-muted/40 animate-pulse"
 											/>
