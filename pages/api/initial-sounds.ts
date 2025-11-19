@@ -35,9 +35,11 @@ const uploadSharedSound = async (
 ): Promise<string> => {
 	try {
 		const fileBuffer = fs.readFileSync(localPath);
-
-		//@ts-expect-error
-		const file = new File([fileBuffer], `${soundId}.mp3`, {
+		const arrayBuffer = fileBuffer.buffer.slice(
+			fileBuffer.byteOffset,
+			fileBuffer.byteOffset + fileBuffer.byteLength,
+		);
+		const file = new File([arrayBuffer as ArrayBuffer], `${soundId}.mp3`, {
 			type: 'audio/mpeg',
 		});
 
